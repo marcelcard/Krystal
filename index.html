@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krystal Soluciones · Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#111; --yellow:#FFE600; --yd:#D4C000;
+  --white:#fff; --gray:#f4f4f4; --muted:#666;
+  --shadow:rgba(0,0,0,.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:#1a1a1a;color:var(--white);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+header{background:#111;border-bottom:3px solid var(--yellow);padding:2rem 1.5rem;text-align:center}
+.kr-logo-wrap{display:flex;align-items:center;justify-content:center;gap:1.2rem;flex-wrap:wrap}
+.kr-logo-svg{width:60px}
+.kr-brand-text h1{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;line-height:1}
+.kr-brand-text p{font-size:.85rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-top:.2rem}
+.kr-tagline{margin-top:1rem;font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.kr-tagline span{color:var(--yellow)}
+
+/* MAIN */
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:2.5rem 1rem}
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;max-width:800px;width:100%}
+
+/* MÓDULO CARD */
+.modulo{background:#222;border:2px solid #333;border-radius:14px;padding:2rem 1.5rem;text-align:center;text-decoration:none;color:var(--white);transition:all .25s;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1rem;position:relative;overflow:hidden}
+.modulo::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.modulo:hover{border-color:var(--yellow);background:#2a2a2a;transform:translateY(-4px);box-shadow:0 12px 40px rgba(255,230,0,.15)}
+.modulo:hover::before{transform:scaleX(1)}
+.modulo:active{transform:translateY(-1px)}
+
+.modulo-icon{font-size:2.8rem;line-height:1}
+.modulo-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.modulo-desc{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.4;letter-spacing:.02em}
+.modulo-badge{background:var(--yellow);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.06em;padding:.2rem .7rem;border-radius:20px;text-transform:uppercase}
+
+/* FOOTER */
+footer{background:#111;border-top:1px solid #222;padding:1rem 1.5rem;text-align:center;font-size:.72rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
+footer span{color:var(--yellow)}
+
+@media(max-width:600px){
+  .menu-grid{grid-template-columns:1fr;max-width:340px}
+  .kr-brand-text h1{font-size:1.6rem}
+  .modulo{flex-direction:row;text-align:left;padding:1.2rem 1.5rem}
+  .modulo-icon{font-size:2rem;flex-shrink:0}
+  .modulo-info{display:flex;flex-direction:column;gap:.3rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kr-logo-wrap">
+    <svg class="kr-logo-svg" viewBox="0 0 60 70" fill="none">
+      <rect x="8" y="10" width="10" height="50" fill="white"/>
+      <rect x="22" y="25" width="10" height="35" fill="white"/>
+      <rect x="36" y="15" width="10" height="45" fill="white"/>
+      <rect x="8" y="8" width="38" height="5" fill="#FFE600"/>
+    </svg>
+    <div class="kr-brand-text">
+      <h1>Krystal Soluciones</h1>
+      <p>Vidrio · Acero · Aluminio</p>
+    </div>
+  </div>
+  <div class="kr-tagline">Sistema de <span>Gestión Interna</span></div>
+</header>
+
+<main>
+  <div class="menu-grid">
+
+    <a class="modulo" href="inventario.html">
+      <div class="modulo-icon">📦</div>
+      <div class="modulo-info">
+        <div class="modulo-title">Inventario</div>
+        <div class="modulo-desc">Registro de entradas de productos y compras</div>
+        <div class="modulo-badge">Entradas</div>
+      </div>
+    </a>
+
+    <a class="modulo" href="remisiones.html">
+      <div class="modulo-icon">📋</div>
+      <div class="modulo-info">
+        <div class="modulo-title">Remisiones</div>
+        <div class="modulo-desc">Despacho de productos con control de stock</div>
+        <div class="modulo-badge">Salidas</div>
+      </div>
+    </a>
+
+    <a class="modulo" href="ventas.html">
+      <div class="modulo-icon">💰</div>
+      <div class="modulo-info">
+        <div class="modulo-title">Ventas</div>
+        <div class="modulo-desc">Registro diario de ventas por medio de pago</div>
+        <div class="modulo-badge">Diario</div>
+      </div>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  📍 Calle 68 No. 27-06 · Bogotá &nbsp;·&nbsp;
+  📱 313 267 47 07 &nbsp;·&nbsp;
+  ✉️ krystaleros@gmail.com &nbsp;·&nbsp;
+  <span>@krystalsoluciones</span>
+</footer>
+
+</body>
+</html>

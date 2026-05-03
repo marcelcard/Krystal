@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ventas Diarias — Krystal Soluciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#111; --yellow:#FFE600; --yd:#D4C000;
+  --gray:#f4f4f4; --border:#ddd; --text:#222;
+  --muted:#666; --white:#fff; --shadow:rgba(0,0,0,.10);
+  --red:#e53935; --green:#2e7d32; --blue:#1565c0;
+  --navy:#16213e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:#e8e8e8;color:var(--text);min-height:100vh;padding-bottom:60px}
+
+/* TOP BAR */
+.topbar{background:var(--black);color:var(--white);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.topbar h1{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;letter-spacing:.05em;text-transform:uppercase}
+.topbar-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn{padding:.45rem 1.1rem;border-radius:5px;border:none;font-family:'Barlow',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.04em}
+.btn-yellow{background:var(--yellow);color:var(--black)}
+.btn-yellow:hover{background:var(--yd)}
+.btn-outline{background:none;border:1.5px solid rgba(255,255,255,.3);color:var(--white)}
+.btn-outline:hover{border-color:var(--yellow);color:var(--yellow)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* CONFIG */
+.config-bar{background:#fff9c4;border-bottom:3px solid var(--yellow);padding:.9rem 1.5rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.config-bar.hidden{display:none}
+.config-bar label{font-size:.78rem;font-weight:600;text-transform:uppercase}
+.config-bar input{flex:1;min-width:220px;border:1.5px solid var(--yd);border-radius:5px;padding:.42rem .8rem;font-family:'Barlow',sans-serif;font-size:.85rem}
+
+/* BANNER */
+.banner{padding:.55rem 1.5rem;font-size:.78rem;font-weight:600;display:none}
+.banner.show{display:block}
+.banner.info{background:#e3f2fd;color:var(--blue)}
+.banner.ok{background:#e8f5e9;color:var(--green)}
+.banner.err{background:#ffebee;color:var(--red)}
+
+/* MAIN */
+.main{max-width:760px;margin:1.5rem auto;padding:0 1rem;display:grid;gap:1.2rem}
+
+/* CARD */
+.card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);overflow:hidden}
+
+/* KR HEADER */
+.kr-header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem;padding:1rem 1.2rem .8rem;border-bottom:2px solid var(--black)}
+.kr-logo-area{display:flex;flex-direction:column;align-items:center}
+.kr-logo-svg{width:48px}
+.kr-brand{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;line-height:1.1;text-align:center;margin-top:.2rem}
+.kr-center{text-align:center}
+.kr-title1{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em}
+.kr-title2{background:var(--yellow);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em;padding:.15rem .9rem;margin:.25rem 0;display:inline-block;border-radius:3px}
+.kr-phone{font-size:.78rem;font-weight:600}
+.kr-doc-box{text-align:right}
+.kr-doc-label{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.kr-fecha-auto{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+.kr-fecha-auto span{font-weight:700;color:var(--text)}
+
+/* FECHA VENTA */
+.fecha-venta-wrap{padding:.8rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.fecha-venta-wrap label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+.fecha-venta-wrap input[type=date]{border:2px solid var(--border);border-radius:6px;padding:.4rem .8rem;font-family:'Barlow',sans-serif;font-size:.92rem;color:var(--text);cursor:pointer;transition:border-color .2s}
+.fecha-venta-wrap input[type=date]:focus{outline:none;border-color:var(--black)}
+
+/* VENTAS GRID */
+.ventas-body{padding:1.2rem}
+.ventas-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.venta-field{display:flex;flex-direction:column;gap:.4rem}
+.venta-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;gap:.4rem}
+.venta-label .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot-efectivo{background:#2e7d32}
+.dot-nequi{background:#6a1b9a}
+.dot-daviplata{background:#e53935}
+.dot-otro{background:#e65100}
+.venta-input{border:2px solid var(--border);border-radius:8px;padding:.75rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text);transition:border-color .2s;text-align:right}
+.venta-input:focus{outline:none;border-color:var(--black);background:#fffde7}
+.venta-input::placeholder{color:#ccc;font-weight:400;font-size:1rem}
+
+/* TOTAL */
+.total-bar{background:var(--black);margin:1rem 0 0;border-radius:8px;padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+.total-bar .tl{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.total-bar .tv{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:var(--yellow);letter-spacing:.02em}
+
+/* DESGLOSE */
+.desglose{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.8rem}
+.desg-item{background:var(--gray);border-radius:6px;padding:.5rem .6rem;text-align:center}
+.desg-lbl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.2rem}
+.desg-val{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+
+/* BOTÓN GUARDAR */
+.save-wrap{padding:0 1.2rem 1.2rem;margin-top:.5rem}
+.btn-save-big{width:100%;padding:1rem;background:var(--yellow);color:var(--black);border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-save-big:hover{background:var(--yd)}
+.btn-save-big:disabled{opacity:.5;cursor:not-allowed}
+
+/* RESUMEN SEMANAL */
+.semana-card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);overflow:hidden}
+.semana-header{background:var(--black);color:var(--white);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+.semana-header span{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.semana-rango{font-size:.75rem;color:rgba(255,255,255,.6);font-weight:400}
+.semana-body{padding:1rem 1.2rem}
+.semana-loading{text-align:center;padding:2rem;color:var(--muted);font-size:.85rem}
+
+/* TABLA SEMANAL */
+.tabla-semana{width:100%;border-collapse:collapse;font-size:.84rem}
+.tabla-semana th{padding:.5rem .6rem;text-align:center;font-weight:700;font-size:.70rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--black);background:var(--gray)}
+.tabla-semana th.left{text-align:left}
+.tabla-semana td{padding:.55rem .6rem;border-bottom:1px solid var(--border);text-align:center}
+.tabla-semana td.left{text-align:left;font-weight:600}
+.tabla-semana td.monto{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700}
+.tabla-semana tr:last-child td{border-bottom:none}
+.tabla-semana tr.hoy td{background:#fffde7}
+.tabla-semana tr.total-row td{background:var(--black);color:var(--white);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:1rem}
+.tabla-semana tr.total-row td.monto{color:var(--yellow);font-size:1.1rem}
+.dia-badge{display:inline-block;background:var(--yellow);color:var(--black);font-size:.65rem;font-weight:700;padding:.1rem .4rem;border-radius:3px;text-transform:uppercase;letter-spacing:.04em;margin-left:.4rem}
+.sin-dato{color:#ccc;font-style:italic;font-size:.78rem}
+
+/* BARRAS */
+.barra-wrap{display:flex;align-items:center;gap:.5rem;justify-content:flex-end}
+.barra{height:6px;border-radius:3px;background:var(--yellow);min-width:2px;transition:width .5s}
+
+@media(max-width:560px){
+  .kr-header{grid-template-columns:1fr;text-align:center}
+  .ventas-grid{grid-template-columns:1fr}
+  .desglose{grid-template-columns:repeat(2,1fr)}
+}
+@media print{
+  .topbar,.config-bar,.save-wrap,.semana-card,.banner{display:none!important}
+  body{background:white;padding:0}
+  .main{margin:0;padding:0;max-width:100%}
+  .card{box-shadow:none;border-radius:0}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <h1>💰 Ventas Diarias · Krystal</h1>
+  <div class="topbar-btns">
+    <button class="btn btn-outline" onclick="cargarSemana()">🔄 Actualizar</button>
+    <button class="btn btn-outline" onclick="printPage()">🖨️ Imprimir</button>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="config-bar" id="configBar">
+  <label>⚙️ URL del Apps Script:</label>
+  <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+  <button class="btn btn-yellow" onclick="saveUrl()">✓ Guardar</button>
+</div>
+
+<!-- BANNER -->
+<div class="banner" id="banner"></div>
+
+<div class="main">
+
+  <!-- REGISTRO DIARIO -->
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="kr-header">
+      <div class="kr-logo-area">
+        <svg class="kr-logo-svg" viewBox="0 0 60 70" fill="none">
+          <rect x="8" y="10" width="10" height="50" fill="#111"/>
+          <rect x="22" y="25" width="10" height="35" fill="#111"/>
+          <rect x="36" y="15" width="10" height="45" fill="#111"/>
+          <rect x="8" y="8" width="38" height="5" fill="#FFE600"/>
+        </svg>
+        <div class="kr-brand">KRYSTAL<br>SOLUCIONES</div>
+      </div>
+      <div class="kr-center">
+        <div class="kr-title1">VIDRIO · ACERO · ALUMINIO</div>
+        <div class="kr-title2">REGISTRO DE VENTAS</div>
+        <div class="kr-phone">📱 313 267 47 07 &nbsp;·&nbsp; 313 212 76 92</div>
+      </div>
+      <div class="kr-doc-box">
+        <div class="kr-doc-label">Fecha Registro</div>
+        <div class="kr-fecha-auto">
+          Auto: <span id="fechaAuto">—</span>
+        </div>
+        <div class="kr-fecha-auto" style="margin-top:.3rem">
+          Hora: <span id="horaAuto">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FECHA VENTA -->
+    <div class="fecha-venta-wrap">
+      <label>📅 Fecha de Venta:</label>
+      <input type="date" id="fechaVenta">
+      <span style="font-size:.78rem;color:var(--muted)">(editable — para registros de días anteriores)</span>
+    </div>
+
+    <!-- CAMPOS DE VENTA -->
+    <div class="ventas-body">
+      <div class="ventas-grid">
+
+        <div class="venta-field">
+          <div class="venta-label">
+            <span class="dot dot-efectivo"></span>Efectivo
+          </div>
+          <input class="venta-input" type="number" id="v_efectivo" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+        <div class="venta-field">
+          <div class="venta-label">
+            <span class="dot dot-nequi"></span>Nequi
+          </div>
+          <input class="venta-input" type="number" id="v_nequi" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+        <div class="venta-field">
+          <div class="venta-label">
+            <span class="dot dot-daviplata"></span>Daviplata
+          </div>
+          <input class="venta-input" type="number" id="v_daviplata" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+        <div class="venta-field">
+          <div class="venta-label">
+            <span class="dot dot-otro"></span>Otro
+          </div>
+          <input class="venta-input" type="number" id="v_otro" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+      </div>
+
+      <!-- TOTAL -->
+      <div class="total-bar">
+        <div class="tl">Total del Día</div>
+        <div class="tv" id="totalDia">$ 0</div>
+      </div>
+
+      <!-- DESGLOSE -->
+      <div class="desglose">
+        <div class="desg-item">
+          <div class="desg-lbl">Efectivo</div>
+          <div class="desg-val" id="pct_efectivo">0%</div>
+        </div>
+        <div class="desg-item">
+          <div class="desg-lbl">Nequi</div>
+          <div class="desg-val" id="pct_nequi">0%</div>
+        </div>
+        <div class="desg-item">
+          <div class="desg-lbl">Daviplata</div>
+          <div class="desg-val" id="pct_daviplata">0%</div>
+        </div>
+        <div class="desg-item">
+          <div class="desg-lbl">Otro</div>
+          <div class="desg-val" id="pct_otro">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUARDAR -->
+    <div class="save-wrap">
+      <button class="btn-save-big" id="btnGuardar" onclick="guardarVenta()">
+        💾 Guardar Venta del Día
+      </button>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- RESUMEN SEMANAL -->
+  <div class="semana-card">
+    <div class="semana-header">
+      <span>📊 Resumen Semanal</span>
+      <span class="semana-rango" id="semanaRango"></span>
+    </div>
+    <div class="semana-body">
+      <div class="semana-loading" id="semanaLoading">Cargando datos semanales...</div>
+      <table class="tabla-semana" id="tablaSemana" style="display:none">
+        <thead>
+          <tr>
+            <th class="left">Día</th>
+            <th>Efectivo</th>
+            <th>Nequi</th>
+            <th>Daviplata</th>
+            <th>Otro</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="semanaBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────
+const SK = 'krystal_script_url';
+let SCRIPT_URL = localStorage.getItem(SK) ||
+  'https://script.google.com/macros/s/AKfycbxusVBQq9FjAMKrzabtrmjx7uSvyLJXtG3ZiTf7lCUExOvtgs73AzxbxPP91ltTg3wI/exec';
+
+// ─── INIT ─────────────────────────────────────────────────────
+window.onload = () => {
+  checkConfig();
+  initFechas();
+  calcTotal();
+  cargarSemana();
+
+  // Reloj en tiempo real
+  setInterval(() => {
+    document.getElementById('horaAuto').textContent =
+      new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  }, 1000);
+};
+
+// ─── CONFIG ───────────────────────────────────────────────────
+function checkConfig() {
+  if (SCRIPT_URL) document.getElementById('configBar').classList.add('hidden');
+}
+
+function saveUrl() {
+  const v = document.getElementById('scriptUrlInput').value.trim();
+  if (!v.startsWith('https://script.google.com')) { alert('URL inválida'); return; }
+  SCRIPT_URL = v;
+  localStorage.setItem(SK, v);
+  document.getElementById('configBar').classList.add('hidden');
+  setBanner('✓ URL guardada', 'ok', 3000);
+  cargarSemana();
+}
+
+// ─── FECHAS ───────────────────────────────────────────────────
+function initFechas() {
+  const hoy = new Date();
+  // Fecha automática (no editable) — registro
+  document.getElementById('fechaAuto').textContent =
+    hoy.toLocaleDateString('es-CO', {day:'2-digit', month:'2-digit', year:'numeric'});
+  document.getElementById('horaAuto').textContent =
+    hoy.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  // Fecha de venta (editable) — por defecto hoy
+  document.getElementById('fechaVenta').value = hoy.toISOString().split('T')[0];
+}
+
+// ─── CALCULAR TOTAL ───────────────────────────────────────────
+function calcTotal() {
+  const e = parseFloat(document.getElementById('v_efectivo').value)  || 0;
+  const n = parseFloat(document.getElementById('v_nequi').value)     || 0;
+  const d = parseFloat(document.getElementById('v_daviplata').value) || 0;
+  const o = parseFloat(document.getElementById('v_otro').value)      || 0;
+  const total = e + n + d + o;
+
+  document.getElementById('totalDia').textContent = fmt(total);
+
+  // Porcentajes
+  const pct = (v) => total > 0 ? Math.round(v / total * 100) + '%' : '0%';
+  document.getElementById('pct_efectivo').textContent  = pct(e);
+  document.getElementById('pct_nequi').textContent     = pct(n);
+  document.getElementById('pct_daviplata').textContent = pct(d);
+  document.getElementById('pct_otro').textContent      = pct(o);
+}
+
+// ─── GUARDAR VENTA ────────────────────────────────────────────
+async function guardarVenta() {
+  const efectivo  = parseFloat(document.getElementById('v_efectivo').value)  || 0;
+  const nequi     = parseFloat(document.getElementById('v_nequi').value)     || 0;
+  const daviplata = parseFloat(document.getElementById('v_daviplata').value) || 0;
+  const otro      = parseFloat(document.getElementById('v_otro').value)      || 0;
+  const total     = efectivo + nequi + daviplata + otro;
+  const fechaVenta = document.getElementById('fechaVenta').value;
+
+  if (total === 0) {
+    setBanner('⚠ Ingresa al menos un valor antes de guardar', 'err', 4000);
+    return;
+  }
+  if (!fechaVenta) {
+    setBanner('⚠ Selecciona la fecha de venta', 'err', 4000);
+    return;
+  }
+
+  const btn = document.getElementById('btnGuardar');
+  btn.disabled = true;
+  btn.textContent = '⏳ Guardando...';
+  setBanner('⏳ Sincronizando con Google Sheets...', 'info');
+
+  const payload = {
+    action:     'saveVenta',
+    fechaVenta,
+    efectivo:   String(efectivo),
+    nequi:      String(nequi),
+    daviplata:  String(daviplata),
+    otro:       String(otro),
+    total:      String(total),
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      cache:  'no-cache',
+      body:   JSON.stringify(payload),
+    });
+
+    setBanner('✓ Venta guardada correctamente · Total: ' + fmt(total), 'ok', 6000);
+    btn.textContent = '✓ Guardado';
+
+    // Limpiar campos
+    setTimeout(() => {
+      ['v_efectivo','v_nequi','v_daviplata','v_otro'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      calcTotal();
+      btn.textContent = '💾 Guardar Venta del Día';
+      btn.disabled = false;
+      // Recargar semana después de guardar
+      setTimeout(cargarSemana, 2000);
+    }, 1500);
+
+  } catch (err) {
+    setBanner('❌ Error de conexión: ' + err.message, 'err');
+    btn.textContent = '💾 Guardar Venta del Día';
+    btn.disabled = false;
+  }
+}
+
+// ─── CARGAR RESUMEN SEMANAL ───────────────────────────────────
+async function cargarSemana() {
+  if (!SCRIPT_URL) return;
+  document.getElementById('semanaLoading').style.display = 'block';
+  document.getElementById('tablaSemana').style.display   = 'none';
+
+  try {
+    const resp = await fetch(SCRIPT_URL + '?action=getVentasSemana&t=' + Date.now());
+    const data = await resp.json();
+
+    if (data.error) throw new Error(data.error);
+
+    renderSemana(data);
+  } catch (err) {
+    document.getElementById('semanaLoading').textContent =
+      '⚠ No se pudieron cargar los datos: ' + err.message;
+  }
+}
+
+// ─── RENDER SEMANA ────────────────────────────────────────────
+function renderSemana(data) {
+  // data = { semana: [{fecha, diaNombre, efectivo, nequi, daviplata, otro, total}], totalSemana }
+  const tbody  = document.getElementById('semanaBody');
+  const loading = document.getElementById('semanaLoading');
+  const tabla   = document.getElementById('tablaSemana');
+  const rango   = document.getElementById('semanaRango');
+
+  const dias = data.semana || [];
+  if (!dias.length) {
+    loading.textContent = 'Sin datos esta semana';
+    return;
+  }
+
+  // Rango de fechas
+  rango.textContent = fmtFecha(dias[0].fecha) + ' — ' + fmtFecha(dias[dias.length-1].fecha);
+
+  const hoy = new Date().toISOString().split('T')[0];
+  const maxTotal = Math.max(...dias.map(d => d.total || 0), 1);
+
+  let html = '';
+  dias.forEach(d => {
+    const esHoy = d.fecha === hoy;
+    const pct   = Math.round((d.total || 0) / maxTotal * 100);
+    html += `<tr class="${esHoy ? 'hoy' : ''}">
+      <td class="left">${d.diaNombre}${esHoy ? '<span class="dia-badge">Hoy</span>' : ''}</td>
+      <td class="monto">${d.total > 0 ? fmt(d.efectivo)  : '<span class="sin-dato">—</span>'}</td>
+      <td class="monto">${d.total > 0 ? fmt(d.nequi)     : '<span class="sin-dato">—</span>'}</td>
+      <td class="monto">${d.total > 0 ? fmt(d.daviplata)  : '<span class="sin-dato">—</span>'}</td>
+      <td class="monto">${d.total > 0 ? fmt(d.otro)       : '<span class="sin-dato">—</span>'}</td>
+      <td class="monto">${d.total > 0 ? fmt(d.total)      : '<span class="sin-dato">—</span>'}</td>
+      <td><div class="barra-wrap"><div class="barra" style="width:${pct}px"></div></div></td>
+    </tr>`;
+  });
+
+  // Fila total
+  html += `<tr class="total-row">
+    <td class="left">TOTAL SEMANA</td>
+    <td class="monto">${fmt(data.totEfectivo  || 0)}</td>
+    <td class="monto">${fmt(data.totNequi     || 0)}</td>
+    <td class="monto">${fmt(data.totDaviplata || 0)}</td>
+    <td class="monto">${fmt(data.totOtro      || 0)}</td>
+    <td class="monto">${fmt(data.totalSemana  || 0)}</td>
+    <td></td>
+  </tr>`;
+
+  tbody.innerHTML = html;
+  loading.style.display = 'none';
+  tabla.style.display   = 'table';
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function fmt(n) {
+  return '$ ' + Math.round(n || 0).toLocaleString('es-CO');
+}
+
+function fmtFecha(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  const M = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return parseInt(d) + ' ' + M[parseInt(m)-1];
+}
+
+let _bt = null;
+function setBanner(msg, tipo, autoHide) {
+  const el = document.getElementById('banner');
+  el.textContent = msg;
+  el.className = 'banner show ' + tipo;
+  clearTimeout(_bt);
+  if (autoHide) _bt = setTimeout(() => { el.className = 'banner'; }, autoHide);
+}
+
+function printPage() { window.print(); }
+</script>
+</body>
+</html>

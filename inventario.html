@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Krystal · Registro Directo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Raleway:wght@400;600&display=swap" rel="stylesheet"/>
+    <style>
+        :root { --navy: #0f0f1e; --navy2: #1a1a2e; --gold: #e0c97f; --teal: #2dd4bf; --white: #f0eff6; --gray: #8888aa; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--navy); color: var(--white); font-family: 'Raleway', sans-serif; min-height: 100vh; }
+        header { background: #16213e; border-bottom: 1px solid var(--gold); padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.2rem; }
+        .kr-logo-svg { width: 42px; height: auto; }
+        .brand h1 { font-family: 'Barlow Condensed'; font-size: 1.3rem; text-transform: uppercase; margin: 0; }
+        main { max-width: 800px; margin: 3rem auto; padding: 0 1.5rem; width: 100%; }
+        .card { background: var(--navy2); border: 1px solid rgba(224,201,127,.15); border-radius: 12px; padding: 2.5rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: .6rem; }
+        label { font-size: .7rem; font-weight: 600; color: var(--gray); text-transform: uppercase; }
+        input, select { background: rgba(255,255,255,.05); border: 1px solid rgba(224,201,127,.2); border-radius: 8px; padding: .85rem; color: var(--white); }
+        .btn-submit { background: var(--gold); color: var(--navy); padding: 1.1rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 2rem; }
+        #statusMsg { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; text-align: center; font-weight: 600; }
+        .loading { background: rgba(224,201,127,0.1); color: var(--gold); border: 1px solid var(--gold); }
+        .success { background: rgba(45,212,191,0.1); color: var(--teal); border: 1px solid var(--teal); }
+        .error   { background: rgba(229,57,53,0.1);  color: #ef9a9a;    border: 1px solid #ef9a9a; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <svg class="kr-logo-svg" viewBox="0 0 60 70" fill="none"><rect x="8" y="10" width="10" height="50" fill="white"/><rect x="22" y="25" width="10" height="35" fill="white"/><rect x="36" y="15" width="10" height="45" fill="white"/><rect x="8" y="8" width="38" height="5" fill="#FFE600"/></svg>
+        <div class="brand"><h1>Krystal Soluciones</h1><p>Registro de Inventario</p></div>
+    </header>
+
+    <main>
+        <div class="card">
+            <form id="miFormulario">
+                <div class="form-grid">
+                    <div class="field"><label>ID Producto</label><input type="text" id="idProducto" required></div>
+                    <div class="field"><label>Descripción</label><input type="text" id="nombre" required></div>
+                    <div class="field"><label>Cantidad</label><input type="number" id="cantidad" value="1"></div>
+                    <div class="field"><label>Bodega</label>
+                        <select id="bodega">
+                            <option value="Krystal">Krystal</option>
+                            <option value="Carrera 30">Carrera 30</option>
+                            <option value="Teusaquillo">Teusaquillo</option>
+                        </select>
+                    </div>
+                    <div class="field"><label>Costo Unitario</label><input type="number" id="costoUnit" value="0"></div>
+                    <div class="field"><label>Fecha Factura</label><input type="date" id="fechaIngreso"></div>
+                </div>
+                <button type="submit" class="btn-submit" id="btnTexto">Sincronizar Registro</button>
+            </form>
+            <div id="statusMsg"></div>
+        </div>
+    </main>
+
+    <script>
+        // ── URL del Apps Script unificado ──────────────────────────
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwRZB7tswXbF6Dj_ZCAsWLQ-sUmTqSBsgZpU1WM3lWQH3lleeSkXhpmLKChe_212P7J/exec";
+
+        // Fecha automática
+        document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
+
+        document.getElementById('miFormulario').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const msg = document.getElementById("statusMsg");
+            const btn = document.getElementById("btnTexto");
+
+            msg.textContent = "⏳ Procesando en la nube...";
+            msg.className = "loading";
+            msg.style.display = "block";
+            btn.disabled = true;
+
+            const datos = {
+                action:      'saveInventario',   // ← campo nuevo para el script unificado
+                idProducto:  document.getElementById('idProducto').value,
+                nombre:      document.getElementById('nombre').value,
+                cantidad:    document.getElementById('cantidad').value,
+                bodega:      document.getElementById('bodega').value,
+                costoUnit:   document.getElementById('costoUnit').value,
+                fechaIngreso:document.getElementById('fechaIngreso').value
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                body: JSON.stringify(datos)
+            })
+            .then(() => {
+                msg.textContent = "✔ ¡Registro guardado exitosamente!";
+                msg.className = "success";
+                msg.style.display = "block";
+                document.getElementById('miFormulario').reset();
+                document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
+                btn.disabled = false;
+                setTimeout(() => { msg.style.display = "none"; }, 5000);
+            })
+            .catch(() => {
+                msg.textContent = "❌ Error al conectar con el servidor";
+                msg.className = "error";
+                msg.style.display = "block";
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
