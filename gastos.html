@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gastos — Krystal Soluciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#111; --yellow:#FFE600; --yd:#D4C000;
+  --gray:#f4f4f4; --border:#ddd; --text:#222;
+  --muted:#666; --white:#fff; --shadow:rgba(0,0,0,.10);
+  --red:#e53935; --green:#2e7d32; --blue:#1565c0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:#e8e8e8;color:var(--text);min-height:100vh;padding-bottom:80px}
+
+/* TOP BAR */
+.topbar{background:var(--black);color:var(--white);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.topbar h1{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;letter-spacing:.05em;text-transform:uppercase}
+.topbar-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn{padding:.45rem 1.1rem;border-radius:5px;border:none;font-family:'Barlow',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.04em}
+.btn-yellow{background:var(--yellow);color:var(--black)}
+.btn-yellow:hover{background:var(--yd)}
+.btn-outline{background:none;border:1.5px solid rgba(255,255,255,.3);color:var(--white)}
+.btn-outline:hover{border-color:var(--yellow);color:var(--yellow)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* CONFIG */
+.config-bar{background:#fff9c4;border-bottom:3px solid var(--yellow);padding:.9rem 1.5rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.config-bar.hidden{display:none}
+.config-bar label{font-size:.78rem;font-weight:600;text-transform:uppercase}
+.config-bar input{flex:1;min-width:220px;border:1.5px solid var(--yd);border-radius:5px;padding:.42rem .8rem;font-family:'Barlow',sans-serif;font-size:.85rem}
+
+/* BANNER */
+.banner{padding:.55rem 1.5rem;font-size:.78rem;font-weight:600;display:none}
+.banner.show{display:block}
+.banner.info{background:#e3f2fd;color:var(--blue)}
+.banner.ok{background:#e8f5e9;color:var(--green)}
+.banner.err{background:#ffebee;color:var(--red)}
+
+/* MAIN */
+.main{max-width:800px;margin:1.5rem auto;padding:0 1rem;display:grid;gap:1.2rem}
+
+/* CARD */
+.card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);overflow:hidden}
+
+/* KR HEADER */
+.kr-header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem;padding:1rem 1.2rem .8rem;border-bottom:2px solid var(--black)}
+.kr-logo-area{display:flex;flex-direction:column;align-items:center}
+.kr-logo-svg{width:52px}
+.kr-brand{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.08em;line-height:1.1;text-align:center;margin-top:.2rem}
+.kr-center{text-align:center}
+.kr-title1{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em}
+.kr-title2{background:var(--yellow);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.06em;padding:.2rem 1rem;margin:.3rem 0;display:inline-block;border-radius:3px}
+.kr-phone{font-size:.82rem;font-weight:600}
+.kr-doc-box{text-align:right}
+.kr-doc-label{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.kr-fecha-auto{font-size:.72rem;color:var(--muted);margin-top:.3rem}
+.kr-fecha-auto span{font-weight:700;color:var(--text)}
+
+/* DATOS PRINCIPALES */
+.kr-datos{padding:.8rem 1.2rem;border-bottom:1px solid var(--border);display:grid;gap:.5rem}
+.kr-row{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:.5rem}
+.kr-row-2{display:grid;grid-template-columns:110px 1fr 110px 1fr;align-items:center;gap:.5rem}
+.kr-lbl{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.kr-input{border:none;border-bottom:1.5px solid var(--border);padding:.3rem .4rem;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--text);background:transparent;width:100%;transition:border-color .2s}
+.kr-input:focus{outline:none;border-color:var(--black)}
+.kr-input::placeholder{color:#bbb;font-size:.82rem}
+input[type=date].kr-input{cursor:pointer}
+
+/* MEDIOS DE PAGO */
+.kr-medios{padding:1rem 1.2rem;border-bottom:1px solid var(--border)}
+.kr-medios-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.8rem}
+.medios-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem}
+.medio-field{display:flex;flex-direction:column;gap:.35rem}
+.medio-label{font-size:.70rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:.4rem}
+.medio-label .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-efectivo{background:#2e7d32}
+.dot-nequi{background:#6a1b9a}
+.dot-daviplata{background:#e53935}
+.dot-bancolombia{background:#f57c00}
+.dot-otro{background:#455a64}
+.medio-input{border:2px solid var(--border);border-radius:7px;padding:.6rem .8rem;font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);text-align:right;transition:border-color .2s;width:100%}
+.medio-input:focus{outline:none;border-color:var(--black);background:#fffde7}
+.medio-input::placeholder{color:#ccc;font-weight:400;font-size:.9rem}
+
+/* TOTAL */
+.kr-total{background:var(--black);margin:1rem 1.2rem;border-radius:8px;padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+.kr-total .tl{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.kr-total .tv{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--yellow)}
+
+/* DESGLOSE % */
+.desglose{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;padding:0 1.2rem .8rem}
+.desg-item{background:var(--gray);border-radius:5px;padding:.4rem .5rem;text-align:center}
+.desg-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:.15rem}
+.desg-val{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700}
+
+/* OBSERVACIONES */
+.kr-obs{padding:.8rem 1.2rem;border-top:1px solid var(--border)}
+.kr-obs-lbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.3rem}
+.kr-obs textarea{width:100%;border:none;border-bottom:1.5px solid var(--border);font-family:'Barlow',sans-serif;font-size:.84rem;resize:none;min-height:48px;background:transparent;color:var(--text);padding:.2rem .3rem}
+.kr-obs textarea:focus{outline:none;border-color:var(--black)}
+
+/* GUARDAR */
+.save-wrap{padding:.8rem 1.2rem 1.2rem}
+.btn-save-big{width:100%;padding:.9rem;background:var(--yellow);color:var(--black);border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-save-big:hover{background:var(--yd)}
+.btn-save-big:disabled{opacity:.5;cursor:not-allowed}
+
+/* BOTTOM */
+.kr-bottom{background:var(--black);color:var(--white);padding:.55rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;font-size:.72rem}
+
+/* HISTORIAL */
+.hist-panel{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);overflow:hidden;display:none}
+.hist-panel.open{display:block}
+.hist-top{background:var(--black);color:var(--white);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+.hist-top span{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.hist-list{max-height:280px;overflow-y:auto}
+.hist-row{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:.8rem;padding:.65rem 1.2rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.hist-row:hover{background:var(--gray)}
+.hist-fecha{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem}
+.hist-prov{font-size:.84rem}
+.hist-total{font-weight:700;font-size:.88rem}
+.empty-hist{text-align:center;padding:2rem;opacity:.4;font-size:.85rem}
+
+/* SAVE BAR */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--black);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;z-index:200;flex-wrap:wrap}
+.st{font-size:.78rem}
+.st.unsaved{color:var(--yellow)}
+.st.saved{color:#66bb6a}
+.st.loading{color:#aaa}
+.st.err{color:#ef5350}
+
+@media(max-width:580px){
+  .kr-header{grid-template-columns:1fr;text-align:center}
+  .kr-row-2{grid-template-columns:90px 1fr}
+  .medios-grid{grid-template-columns:repeat(2,1fr)}
+  .desglose{grid-template-columns:repeat(3,1fr)}
+  .hist-row{grid-template-columns:100px 1fr}
+  .hist-total{display:none}
+}
+@media print{
+  .topbar,.config-bar,.save-bar,.hist-panel,.banner,.save-wrap{display:none!important}
+  body{background:white;padding:0}
+  .main{margin:0;padding:0;max-width:100%}
+  .card{box-shadow:none;border-radius:0}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>💸 Gastos · Krystal</h1>
+  <div class="topbar-btns">
+    <button class="btn btn-outline" onclick="toggleHistory()">📂 Historial</button>
+    <button class="btn btn-outline" onclick="newGasto()">➕ Nuevo</button>
+    <button class="btn btn-outline" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn btn-yellow" onclick="guardarGasto()">💾 Guardar</button>
+  </div>
+</div>
+
+<div class="config-bar" id="configBar">
+  <label>⚙️ URL Apps Script:</label>
+  <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+  <button class="btn btn-yellow" onclick="saveUrl()">✓ Guardar</button>
+</div>
+
+<div class="banner" id="banner"></div>
+
+<div class="main">
+
+  <!-- HISTORIAL -->
+  <div class="hist-panel" id="histPanel">
+    <div class="hist-top">
+      <span>Historial de Gastos</span>
+      <button class="btn btn-outline" onclick="toggleHistory()" style="padding:.3rem .8rem;font-size:.75rem">Cerrar</button>
+    </div>
+    <div class="hist-list" id="histList"><p class="empty-hist">No hay gastos registrados.</p></div>
+  </div>
+
+  <!-- GASTO CARD -->
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="kr-header">
+      <div class="kr-logo-area">
+        <svg class="kr-logo-svg" viewBox="0 0 60 70" fill="none">
+          <rect x="8" y="10" width="10" height="50" fill="#111"/>
+          <rect x="22" y="25" width="10" height="35" fill="#111"/>
+          <rect x="36" y="15" width="10" height="45" fill="#111"/>
+          <rect x="8" y="8" width="38" height="5" fill="#FFE600"/>
+        </svg>
+        <div class="kr-brand">KRYSTAL<br>SOLUCIONES</div>
+      </div>
+      <div class="kr-center">
+        <div class="kr-title1">VIDRIO · ACERO · ALUMINIO</div>
+        <div class="kr-title2">REGISTRO DE GASTOS</div>
+        <div class="kr-phone">📱 313 267 47 07 &nbsp;·&nbsp; 313 212 76 92</div>
+      </div>
+      <div class="kr-doc-box">
+        <div class="kr-doc-label">Registro</div>
+        <div class="kr-fecha-auto">Fecha: <span id="fechaAuto">—</span></div>
+        <div class="kr-fecha-auto">Hora: <span id="horaAuto">—</span></div>
+      </div>
+    </div>
+
+    <!-- DATOS -->
+    <div class="kr-datos">
+      <div class="kr-row">
+        <span class="kr-lbl">Fecha Gasto:</span>
+        <input type="date" class="kr-input" id="f_fechaGasto">
+      </div>
+      <div class="kr-row">
+        <span class="kr-lbl">Proveedor:</span>
+        <input type="text" class="kr-input" id="f_proveedor" placeholder="Nombre del proveedor" oninput="markDirty()">
+      </div>
+      <div class="kr-row">
+        <span class="kr-lbl">Detalle:</span>
+        <input type="text" class="kr-input" id="f_detalle" placeholder="Descripción del gasto" oninput="markDirty()">
+      </div>
+    </div>
+
+    <!-- MEDIOS DE PAGO -->
+    <div class="kr-medios">
+      <div class="kr-medios-title">💳 Medio de Pago</div>
+      <div class="medios-grid">
+
+        <div class="medio-field">
+          <div class="medio-label"><span class="dot dot-efectivo"></span>Efectivo</div>
+          <input class="medio-input" type="number" id="g_efectivo" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+        <div class="medio-field">
+          <div class="medio-label"><span class="dot dot-nequi"></span>Nequi</div>
+          <input class="medio-input" type="number" id="g_nequi" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+        <div class="medio-field">
+          <div class="medio-label"><span class="dot dot-daviplata"></span>Daviplata</div>
+          <input class="medio-input" type="number" id="g_daviplata" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+        <div class="medio-field">
+          <div class="medio-label"><span class="dot dot-bancolombia"></span>Bancolombia</div>
+          <input class="medio-input" type="number" id="g_bancolombia" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+        <div class="medio-field">
+          <div class="medio-label"><span class="dot dot-otro"></span>Otro</div>
+          <input class="medio-input" type="number" id="g_otro" placeholder="0" min="0" oninput="calcTotal()">
+        </div>
+
+      </div>
+
+      <!-- TOTAL -->
+      <div class="kr-total">
+        <div class="tl">Total Gasto</div>
+        <div class="tv" id="totalGasto">$ 0</div>
+      </div>
+
+      <!-- DESGLOSE -->
+      <div class="desglose">
+        <div class="desg-item"><div class="desg-lbl">Efectivo</div><div class="desg-val" id="pct_e">0%</div></div>
+        <div class="desg-item"><div class="desg-lbl">Nequi</div><div class="desg-val" id="pct_n">0%</div></div>
+        <div class="desg-item"><div class="desg-lbl">Daviplata</div><div class="desg-val" id="pct_d">0%</div></div>
+        <div class="desg-item"><div class="desg-lbl">Bancolombia</div><div class="desg-val" id="pct_b">0%</div></div>
+        <div class="desg-item"><div class="desg-lbl">Otro</div><div class="desg-val" id="pct_o">0%</div></div>
+      </div>
+    </div>
+
+    <!-- OBSERVACIONES -->
+    <div class="kr-obs">
+      <div class="kr-obs-lbl">Observaciones:</div>
+      <textarea id="f_obs" placeholder="Notas adicionales..." oninput="markDirty()"></textarea>
+    </div>
+
+    <!-- GUARDAR -->
+    <div class="save-wrap">
+      <button class="btn-save-big" id="btnGuardar" onclick="guardarGasto()">
+        💾 Registrar Gasto
+      </button>
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="kr-bottom">
+      <span>📍 Calle 68 No. 27-06 (Esquina) · Bogotá</span>
+      <span>✉️ krystaleros@gmail.com</span>
+      <span>📘📷 @krystalsoluciones</span>
+    </div>
+
+  </div><!-- /card -->
+</div><!-- /main -->
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <div class="st unsaved" id="saveStatus">Nuevo registro de gasto</div>
+  <button class="btn btn-yellow" onclick="guardarGasto()">💾 Registrar Gasto</button>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────
+const SK = 'krystal_script_url';
+const GK = 'krystal_gastos_v1';
+let SCRIPT_URL = localStorage.getItem(SK) ||
+  'https://script.google.com/macros/s/AKfycbxusVBQq9FjAMKrzabtrmjx7uSvyLJXtG3ZiTf7lCUExOvtgs73AzxbxPP91ltTg3wI/exec';
+
+let currentId = null;
+let dirty     = false;
+
+// ─── INIT ─────────────────────────────────────────────────────
+window.onload = () => {
+  checkConfig();
+  initFechas();
+  calcTotal();
+  newGasto();
+
+  // Reloj en tiempo real
+  setInterval(() => {
+    document.getElementById('horaAuto').textContent =
+      new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  }, 1000);
+};
+
+// ─── CONFIG ───────────────────────────────────────────────────
+function checkConfig() {
+  if (SCRIPT_URL) document.getElementById('configBar').classList.add('hidden');
+}
+
+function saveUrl() {
+  const v = document.getElementById('scriptUrlInput').value.trim();
+  if (!v.startsWith('https://script.google.com')) { alert('URL inválida'); return; }
+  SCRIPT_URL = v;
+  localStorage.setItem(SK, v);
+  document.getElementById('configBar').classList.add('hidden');
+  setBanner('✓ URL guardada', 'ok', 3000);
+}
+
+// ─── FECHAS ───────────────────────────────────────────────────
+function initFechas() {
+  const hoy = new Date();
+  document.getElementById('fechaAuto').textContent =
+    hoy.toLocaleDateString('es-CO', {day:'2-digit', month:'2-digit', year:'numeric'});
+  document.getElementById('horaAuto').textContent =
+    hoy.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  document.getElementById('f_fechaGasto').value = hoy.toISOString().split('T')[0];
+}
+
+// ─── CALCULAR TOTAL ───────────────────────────────────────────
+function calcTotal() {
+  const e = parseFloat(document.getElementById('g_efectivo').value)    || 0;
+  const n = parseFloat(document.getElementById('g_nequi').value)       || 0;
+  const d = parseFloat(document.getElementById('g_daviplata').value)   || 0;
+  const b = parseFloat(document.getElementById('g_bancolombia').value) || 0;
+  const o = parseFloat(document.getElementById('g_otro').value)        || 0;
+  const total = e + n + d + b + o;
+
+  document.getElementById('totalGasto').textContent = fmt(total);
+
+  const pct = v => total > 0 ? Math.round(v / total * 100) + '%' : '0%';
+  document.getElementById('pct_e').textContent = pct(e);
+  document.getElementById('pct_n').textContent = pct(n);
+  document.getElementById('pct_d').textContent = pct(d);
+  document.getElementById('pct_b').textContent = pct(b);
+  document.getElementById('pct_o').textContent = pct(o);
+
+  markDirty();
+}
+
+// ─── NUEVO GASTO ──────────────────────────────────────────────
+function newGasto() {
+  currentId = null;
+  initFechas();
+  ['f_proveedor','f_detalle','f_obs'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  ['g_efectivo','g_nequi','g_daviplata','g_bancolombia','g_otro'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  calcTotal();
+  setStatus('Nuevo registro de gasto', 'unsaved');
+  dirty = false;
+}
+
+// ─── COLLECT ──────────────────────────────────────────────────
+function collectData() {
+  const e = parseFloat(document.getElementById('g_efectivo').value)    || 0;
+  const n = parseFloat(document.getElementById('g_nequi').value)       || 0;
+  const d = parseFloat(document.getElementById('g_daviplata').value)   || 0;
+  const b = parseFloat(document.getElementById('g_bancolombia').value) || 0;
+  const o = parseFloat(document.getElementById('g_otro').value)        || 0;
+  return {
+    id:          currentId || Date.now(),
+    fechaGasto:  document.getElementById('f_fechaGasto').value,
+    proveedor:   document.getElementById('f_proveedor').value,
+    detalle:     document.getElementById('f_detalle').value,
+    obs:         document.getElementById('f_obs').value,
+    efectivo:    String(e),
+    nequi:       String(n),
+    daviplata:   String(d),
+    bancolombia: String(b),
+    otro:        String(o),
+    total:       String(e + n + d + b + o),
+    savedAt:     new Date().toISOString(),
+  };
+}
+
+// ─── APPLY ────────────────────────────────────────────────────
+function applyData(data) {
+  currentId = data.id;
+  document.getElementById('f_fechaGasto').value  = data.fechaGasto  || '';
+  document.getElementById('f_proveedor').value   = data.proveedor   || '';
+  document.getElementById('f_detalle').value     = data.detalle     || '';
+  document.getElementById('f_obs').value         = data.obs         || '';
+  document.getElementById('g_efectivo').value    = data.efectivo    || '';
+  document.getElementById('g_nequi').value       = data.nequi       || '';
+  document.getElementById('g_daviplata').value   = data.daviplata   || '';
+  document.getElementById('g_bancolombia').value = data.bancolombia || '';
+  document.getElementById('g_otro').value        = data.otro        || '';
+  calcTotal();
+}
+
+// ─── GUARDAR ──────────────────────────────────────────────────
+async function guardarGasto() {
+  const data = collectData();
+
+  if (parseFloat(data.total) === 0) {
+    setBanner('⚠ Ingresa al menos un valor de gasto', 'err', 4000);
+    return;
+  }
+  if (!data.fechaGasto) {
+    setBanner('⚠ Selecciona la fecha del gasto', 'err', 4000);
+    return;
+  }
+
+  // Guardar localmente
+  const all = getAll();
+  const idx = all.findIndex(r => r.id === data.id);
+  if (idx >= 0) all[idx] = data; else all.push(data);
+  saveAll(all);
+  currentId = data.id;
+  renderHistory();
+
+  if (!SCRIPT_URL) {
+    setStatus('✓ Guardado localmente', 'saved');
+    dirty = false;
+    return;
+  }
+
+  const btn = document.getElementById('btnGuardar');
+  btn.disabled = true;
+  btn.textContent = '⏳ Guardando...';
+  setStatus('⏳ Sincronizando con Sheets...', 'loading');
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      cache:  'no-cache',
+      body:   JSON.stringify({ ...data, action: 'saveGasto' }),
+    });
+
+    setBanner('✓ Gasto registrado · Total: ' + fmt(parseFloat(data.total)), 'ok', 5000);
+    setStatus('✓ Guardado · ' + new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}), 'saved');
+    dirty = false;
+
+    setTimeout(() => {
+      newGasto();
+      btn.textContent = '💾 Registrar Gasto';
+      btn.disabled = false;
+    }, 1500);
+
+  } catch (err) {
+    setBanner('❌ Error de conexión', 'err');
+    btn.textContent = '💾 Registrar Gasto';
+    btn.disabled = false;
+  }
+}
+
+// ─── LOCAL STORAGE ────────────────────────────────────────────
+function getAll()     { return JSON.parse(localStorage.getItem(GK) || '[]'); }
+function saveAll(arr) { localStorage.setItem(GK, JSON.stringify(arr)); }
+
+// ─── HISTORIAL ────────────────────────────────────────────────
+function toggleHistory() {
+  const p = document.getElementById('histPanel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('histList');
+  const all  = getAll().slice().reverse();
+  if (!all.length) { list.innerHTML = '<p class="empty-hist">No hay gastos registrados.</p>'; return; }
+  list.innerHTML = all.map(r => `
+    <div class="hist-row" onclick="loadGasto('${r.id}')">
+      <div class="hist-fecha">${fmtDate(r.fechaGasto)}</div>
+      <div class="hist-prov">${r.proveedor || 'Sin proveedor'} · ${r.detalle || ''}</div>
+      <div class="hist-total">${fmt(parseFloat(r.total)||0)}</div>
+    </div>`).join('');
+}
+
+function loadGasto(id) {
+  const r = getAll().find(x => String(x.id) === String(id));
+  if (!r) return;
+  applyData(r);
+  document.getElementById('histPanel').classList.remove('open');
+  setStatus('Gasto · ' + fmtDate(r.fechaGasto) + ' · ' + (r.proveedor || ''), 'saved');
+  dirty = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function fmt(n) { return '$ ' + Math.round(n||0).toLocaleString('es-CO'); }
+
+function fmtDate(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  const M = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return parseInt(d) + ' ' + M[parseInt(m)-1] + ' ' + y;
+}
+
+function setBanner(msg, tipo, autoHide) {
+  const el = document.getElementById('banner');
+  el.textContent = msg;
+  el.className = 'banner show ' + tipo;
+  if (autoHide) setTimeout(() => { el.className = 'banner'; }, autoHide);
+}
+
+function setStatus(msg, tipo) {
+  const el = document.getElementById('saveStatus');
+  el.textContent = msg;
+  el.className = 'st ' + tipo;
+}
+
+function markDirty() {
+  if (!dirty) { dirty = true; setStatus('⚠ Cambios sin guardar', 'unsaved'); }
+}
+
+window.onbeforeunload = () => { if (dirty) return ''; };
+</script>
+</body>
+</html>
