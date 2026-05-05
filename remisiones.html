@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Remisión — Krystal Soluciones</title>
+<title>Remisiones — Krystal Soluciones</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -155,10 +155,12 @@ tr:hover td.num{background:#f0f0f0}
 <div class="topbar">
   <h1>📋 Remisiones · Krystal</h1>
   <div class="topbar-btns">
+    <span id="userBadge" style="font-size:.75rem;color:rgba(255,255,255,.5);padding:.45rem .5rem">👤 —</span>
     <button class="btn btn-outline" onclick="toggleHistory()">📂 Historial</button>
     <button class="btn btn-outline" onclick="newRemision()">➕ Nueva</button>
     <button class="btn btn-outline" onclick="recargarStock()">🔄 Stock</button>
     <button class="btn btn-outline" onclick="printRemision()">🖨️ Imprimir</button>
+    <button class="btn btn-outline" onclick="window.location.href='index.html'">← Menú</button>
     <button class="btn btn-yellow" onclick="saveRemision()">💾 Guardar</button>
   </div>
 </div>
@@ -287,6 +289,11 @@ tr:hover td.num{background:#f0f0f0}
 </div>
 
 <script>
+// ─── VERIFICAR SESIÓN ─────────────────────────────────────────
+const _user = sessionStorage.getItem('krystal_user');
+if (!_user) window.location.href = 'index.html';
+document.getElementById('userBadge').textContent = '👤 ' + _user;
+
 // ─── CONFIG ───────────────────────────────────────────────────
 const SK     = 'krystal_script_url';
 const RK     = 'krystal_remisiones_v3';
@@ -567,6 +574,7 @@ function collectData() {
     total:         String(sub),
     saldo:         String(sub - abono),
     items:         JSON.stringify(items),
+    usuario:       _user || '',
     savedAt:       new Date().toISOString(),
   };
 }

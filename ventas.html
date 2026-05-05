@@ -142,8 +142,10 @@ body{font-family:'Barlow',sans-serif;background:#e8e8e8;color:var(--text);min-he
 <div class="topbar">
   <h1>💰 Ventas Diarias · Krystal</h1>
   <div class="topbar-btns">
+    <span id="userBadge" style="font-size:.75rem;color:rgba(255,255,255,.5);padding:.45rem .5rem">👤 —</span>
     <button class="btn btn-outline" onclick="cargarSemana()">🔄 Actualizar</button>
     <button class="btn btn-outline" onclick="printPage()">🖨️ Imprimir</button>
+    <button class="btn btn-outline" onclick="window.location.href='index.html'">← Menú</button>
   </div>
 </div>
 
@@ -294,6 +296,10 @@ body{font-family:'Barlow',sans-serif;background:#e8e8e8;color:var(--text);min-he
 </div><!-- /main -->
 
 <script>
+// ─── VERIFICAR SESIÓN ─────────────────────────────────────────
+const _user = sessionStorage.getItem('krystal_user');
+if (!_user) window.location.href = 'index.html';
+
 // ─── CONFIG ───────────────────────────────────────────────────
 const SK = 'krystal_script_url';
 let SCRIPT_URL = localStorage.getItem(SK) ||
@@ -305,6 +311,7 @@ window.onload = () => {
   initFechas();
   calcTotal();
   cargarSemana();
+  if (_user) document.getElementById('userBadge').textContent = '👤 ' + _user;
 
   // Reloj en tiempo real
   setInterval(() => {
@@ -383,6 +390,7 @@ async function guardarVenta() {
 
   const payload = {
     action:     'saveVenta',
+    usuario:    _user || '',
     fechaVenta,
     efectivo:   String(efectivo),
     nequi:      String(nequi),
