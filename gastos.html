@@ -153,9 +153,11 @@ input[type=date].kr-input{cursor:pointer}
 <div class="topbar">
   <h1>💸 Gastos · Krystal</h1>
   <div class="topbar-btns">
+    <span id="userBadge" style="font-size:.75rem;color:rgba(255,255,255,.5);padding:.45rem .5rem">👤 —</span>
     <button class="btn btn-outline" onclick="toggleHistory()">📂 Historial</button>
     <button class="btn btn-outline" onclick="newGasto()">➕ Nuevo</button>
     <button class="btn btn-outline" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn btn-outline" onclick="window.location.href='index.html'">← Menú</button>
     <button class="btn btn-yellow" onclick="guardarGasto()">💾 Guardar</button>
   </div>
 </div>
@@ -299,6 +301,10 @@ input[type=date].kr-input{cursor:pointer}
 </div>
 
 <script>
+// ─── VERIFICAR SESIÓN ─────────────────────────────────────────
+const _user = sessionStorage.getItem('krystal_user');
+if (!_user) window.location.href = 'index.html';
+
 // ─── CONFIG ───────────────────────────────────────────────────
 const SK = 'krystal_script_url';
 const GK = 'krystal_gastos_v1';
@@ -314,6 +320,7 @@ window.onload = () => {
   initFechas();
   calcTotal();
   newGasto();
+  if (_user) document.getElementById('userBadge').textContent = '👤 ' + _user;
 
   // Reloj en tiempo real
   setInterval(() => {
@@ -457,7 +464,7 @@ async function guardarGasto() {
       method: 'POST',
       mode:   'no-cors',
       cache:  'no-cache',
-      body:   JSON.stringify({ ...data, action: 'saveGasto' }),
+      body:   JSON.stringify({ ...data, action: 'saveGasto', usuario: _user || '' }),
     });
 
     setBanner('✓ Gasto registrado · Total: ' + fmt(parseFloat(data.total)), 'ok', 5000);

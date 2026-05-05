@@ -6,11 +6,7 @@
 <title>Krystal Soluciones · Sistema</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black:#111; --yellow:#FFE600; --yd:#D4C000;
-  --white:#fff; --gray:#f4f4f4; --muted:#666;
-  --shadow:rgba(0,0,0,.15);
-}
+:root{--black:#111;--yellow:#FFE600;--yd:#D4C000;--white:#fff;--red:#e53935;--green:#2e7d32;--muted:#666}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',sans-serif;background:#1a1a1a;color:var(--white);min-height:100vh;display:flex;flex-direction:column}
 
@@ -24,31 +20,59 @@ header{background:#111;border-bottom:3px solid var(--yellow);padding:2rem 1.5rem
 .kr-tagline span{color:var(--yellow)}
 
 /* MAIN */
-main{flex:1;display:flex;align-items:center;justify-content:center;padding:2.5rem 1rem}
-.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;max-width:700px;width:100%}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
 
-/* MÓDULO CARD */
-.modulo{background:#222;border:2px solid #333;border-radius:14px;padding:2rem 1.5rem;text-align:center;text-decoration:none;color:var(--white);transition:all .25s;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1rem;position:relative;overflow:hidden}
+/* LOGIN */
+.login-box{background:#222;border:2px solid #333;border-radius:14px;padding:2.5rem 2rem;width:100%;max-width:380px;display:flex;flex-direction:column;gap:1.2rem}
+.login-box.hidden{display:none}
+.login-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:center;color:var(--yellow)}
+.login-sub{font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-top:-.5rem}
+.login-field{display:flex;flex-direction:column;gap:.4rem}
+.login-field label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.5)}
+.login-select,.login-input{background:#2a2a2a;border:1.5px solid #444;border-radius:7px;padding:.75rem 1rem;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--white);width:100%;transition:border-color .2s}
+.login-select:focus,.login-input:focus{outline:none;border-color:var(--yellow)}
+.login-select option{background:#222}
+.btn-login{background:var(--yellow);color:var(--black);border:none;border-radius:7px;padding:.85rem;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;width:100%}
+.btn-login:hover{background:var(--yd)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed}
+.login-msg{font-size:.8rem;text-align:center;padding:.5rem;border-radius:6px;display:none}
+.login-msg.err{background:rgba(229,57,53,.15);color:#ef9a9a;border:1px solid rgba(229,57,53,.3);display:block}
+.login-msg.ok{background:rgba(46,125,50,.15);color:#a5d6a7;border:1px solid rgba(46,125,50,.3);display:block}
+
+/* NUEVA CLAVE */
+.nueva-clave{display:none;flex-direction:column;gap:1rem}
+.nueva-clave.show{display:flex}
+.nc-title{font-size:.85rem;color:rgba(255,255,255,.6);text-align:center;line-height:1.5}
+.nc-title strong{color:var(--yellow)}
+
+/* MENÚ */
+.menu-wrap{display:none;flex-direction:column;gap:1.5rem;width:100%;max-width:700px}
+.menu-wrap.show{display:flex}
+.user-bar{background:#222;border-radius:10px;padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.user-info{font-size:.85rem;color:rgba(255,255,255,.6)}
+.user-info strong{color:var(--yellow);text-transform:capitalize}
+.btn-logout{background:none;border:1.5px solid #444;color:rgba(255,255,255,.5);border-radius:5px;padding:.3rem .8rem;font-family:'Barlow',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+.btn-cambiar-clave{background:none;border:1.5px solid #444;color:rgba(255,255,255,.5);border-radius:5px;padding:.3rem .8rem;font-family:'Barlow',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s}
+.btn-cambiar-clave:hover{border-color:var(--yellow);color:var(--yellow)}
+
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
+.modulo{background:#222;border:2px solid #333;border-radius:14px;padding:1.8rem 1.5rem;text-align:center;text-decoration:none;color:var(--white);transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:.8rem;position:relative;overflow:hidden}
 .modulo::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .3s}
-.modulo:hover{border-color:var(--yellow);background:#2a2a2a;transform:translateY(-4px);box-shadow:0 12px 40px rgba(255,230,0,.15)}
+.modulo:hover{border-color:var(--yellow);background:#2a2a2a;transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,230,0,.12)}
 .modulo:hover::before{transform:scaleX(1)}
-.modulo:active{transform:translateY(-1px)}
-
-.modulo-icon{font-size:2.8rem;line-height:1}
-.modulo-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-.modulo-desc{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.4;letter-spacing:.02em}
-.modulo-badge{background:var(--yellow);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.06em;padding:.2rem .7rem;border-radius:20px;text-transform:uppercase}
+.modulo-icon{font-size:2.4rem}
+.modulo-title{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.modulo-desc{font-size:.78rem;color:rgba(255,255,255,.4);line-height:1.4}
+.modulo-badge{background:var(--yellow);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.06em;padding:.15rem .6rem;border-radius:20px;text-transform:uppercase}
 
 /* FOOTER */
 footer{background:#111;border-top:1px solid #222;padding:1rem 1.5rem;text-align:center;font-size:.72rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
 footer span{color:var(--yellow)}
 
-@media(max-width:600px){
-  .menu-grid{grid-template-columns:1fr;max-width:340px}
+@media(max-width:500px){
+  .menu-grid{grid-template-columns:1fr}
   .kr-brand-text h1{font-size:1.6rem}
-  .modulo{flex-direction:row;text-align:left;padding:1.2rem 1.5rem}
-  .modulo-icon{font-size:2rem;flex-shrink:0}
-  .modulo-info{display:flex;flex-direction:column;gap:.3rem}
 }
 </style>
 </head>
@@ -71,45 +95,91 @@ footer span{color:var(--yellow)}
 </header>
 
 <main>
-  <div class="menu-grid">
 
-    <a class="modulo" href="inventario.html">
-      <div class="modulo-icon">📦</div>
-      <div class="modulo-info">
+  <!-- LOGIN -->
+  <div class="login-box" id="loginBox">
+    <div class="login-title">🔐 Acceso al Sistema</div>
+    <div class="login-sub">Selecciona tu usuario e ingresa tu clave</div>
+
+    <!-- FORM LOGIN -->
+    <div id="formLogin">
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="login-field">
+          <label>Usuario</label>
+          <select class="login-select" id="selUsuario">
+            <option value="">— Selecciona —</option>
+            <option value="marcel">Marcel</option>
+            <option value="natalia">Natalia</option>
+            <option value="krystal">Krystal</option>
+          </select>
+        </div>
+        <div class="login-field">
+          <label>Clave</label>
+          <input class="login-input" type="password" id="inpClave" placeholder="Ingresa tu clave" onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar</button>
+        <div class="login-msg" id="loginMsg"></div>
+      </div>
+    </div>
+
+    <!-- PRIMERA VEZ / CAMBIAR CLAVE -->
+    <div class="nueva-clave" id="formNuevaClave">
+      <div class="nc-title">
+        👋 Bienvenido <strong id="ncNombre"></strong><br>
+        Es tu primera vez. Crea una clave para tu cuenta.
+      </div>
+      <div class="login-field">
+        <label>Nueva Clave</label>
+        <input class="login-input" type="password" id="inpNueva" placeholder="Escribe tu clave">
+      </div>
+      <div class="login-field">
+        <label>Confirmar Clave</label>
+        <input class="login-input" type="password" id="inpConfirma" placeholder="Repite tu clave" onkeydown="if(event.key==='Enter') doSetClave()">
+      </div>
+      <button class="btn-login" id="btnSetClave" onclick="doSetClave()">Crear Clave e Ingresar</button>
+      <div class="login-msg" id="nuevaClaveMsg"></div>
+      <button style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.78rem;cursor:pointer;text-decoration:underline" onclick="volverLogin()">← Volver</button>
+    </div>
+
+  </div>
+
+  <!-- MENÚ PRINCIPAL -->
+  <div class="menu-wrap" id="menuWrap">
+    <div class="user-bar">
+      <div class="user-info">Sesión activa: <strong id="userLabel">—</strong></div>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn-cambiar-clave" onclick="mostrarCambiarClave()">🔑 Cambiar clave</button>
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+      </div>
+    </div>
+    <div class="menu-grid">
+      <a class="modulo" href="inventario.html">
+        <div class="modulo-icon">📦</div>
         <div class="modulo-title">Inventario</div>
         <div class="modulo-desc">Registro de entradas de productos y compras</div>
         <div class="modulo-badge">Entradas</div>
-      </div>
-    </a>
-
-    <a class="modulo" href="remisiones.html">
-      <div class="modulo-icon">📋</div>
-      <div class="modulo-info">
+      </a>
+      <a class="modulo" href="remisiones.html">
+        <div class="modulo-icon">📋</div>
         <div class="modulo-title">Remisiones</div>
         <div class="modulo-desc">Despacho de productos con control de stock</div>
         <div class="modulo-badge">Salidas</div>
-      </div>
-    </a>
-
-    <a class="modulo" href="ventas.html">
-      <div class="modulo-icon">💰</div>
-      <div class="modulo-info">
+      </a>
+      <a class="modulo" href="ventas.html">
+        <div class="modulo-icon">💰</div>
         <div class="modulo-title">Ventas</div>
         <div class="modulo-desc">Registro diario de ventas por medio de pago</div>
         <div class="modulo-badge">Diario</div>
-      </div>
-    </a>
-
-    <a class="modulo" href="gastos.html">
-      <div class="modulo-icon">💸</div>
-      <div class="modulo-info">
+      </a>
+      <a class="modulo" href="gastos.html">
+        <div class="modulo-icon">💸</div>
         <div class="modulo-title">Gastos</div>
         <div class="modulo-desc">Registro de gastos por proveedor y medio de pago</div>
         <div class="modulo-badge">Egresos</div>
-      </div>
-    </a>
-
+      </a>
+    </div>
   </div>
+
 </main>
 
 <footer>
@@ -119,5 +189,142 @@ footer span{color:var(--yellow)}
   <span>@krystalsoluciones</span>
 </footer>
 
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxusVBQq9FjAMKrzabtrmjx7uSvyLJXtG3ZiTf7lCUExOvtgs73AzxbxPP91ltTg3wI/exec';
+const SK = 'krystal_script_url';
+let usuarioPendiente = '';
+
+// ─── INIT ─────────────────────────────────────────────────────
+window.onload = () => {
+  // Guardar URL en localStorage para que los módulos la usen
+  localStorage.setItem(SK, SCRIPT_URL);
+
+  // Verificar sesión activa
+  const u = sessionStorage.getItem('krystal_user');
+  if (u) mostrarMenu(u);
+};
+
+// ─── HASH SHA-256 ─────────────────────────────────────────────
+async function hashClave(clave) {
+  const enc  = new TextEncoder().encode(clave);
+  const buf  = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ─── LOGIN ────────────────────────────────────────────────────
+async function doLogin() {
+  const usuario = document.getElementById('selUsuario').value;
+  const clave   = document.getElementById('inpClave').value;
+  const msg     = document.getElementById('loginMsg');
+
+  if (!usuario) { showMsg(msg, '⚠ Selecciona un usuario', 'err'); return; }
+  if (!clave)   { showMsg(msg, '⚠ Ingresa tu clave', 'err'); return; }
+
+  const btn = document.getElementById('btnLogin');
+  btn.disabled = true; btn.textContent = '⏳ Verificando...';
+
+  try {
+    const hash = await hashClave(clave);
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'loginUsuario', usuario, hash })
+    });
+    const data = await resp.json();
+
+    if (data.primeraVez) {
+      usuarioPendiente = usuario;
+      mostrarFormNuevaClave(usuario);
+    } else if (data.ok) {
+      sessionStorage.setItem('krystal_user', usuario);
+      mostrarMenu(usuario);
+    } else {
+      showMsg(msg, '❌ ' + (data.error || 'Clave incorrecta'), 'err');
+    }
+  } catch (err) {
+    showMsg(msg, '⚠ Error de conexión', 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Ingresar';
+  }
+}
+
+// ─── CREAR / CAMBIAR CLAVE ────────────────────────────────────
+async function doSetClave() {
+  const nueva    = document.getElementById('inpNueva').value;
+  const confirma = document.getElementById('inpConfirma').value;
+  const msg      = document.getElementById('nuevaClaveMsg');
+
+  if (!nueva)           { showMsg(msg, '⚠ Escribe una clave', 'err'); return; }
+  if (nueva.length < 4) { showMsg(msg, '⚠ Mínimo 4 caracteres', 'err'); return; }
+  if (nueva !== confirma){ showMsg(msg, '⚠ Las claves no coinciden', 'err'); return; }
+
+  const btn = document.getElementById('btnSetClave');
+  btn.disabled = true; btn.textContent = '⏳ Guardando...';
+
+  try {
+    const hash = await hashClave(nueva);
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'setClave', usuario: usuarioPendiente, hash })
+    });
+    const data = await resp.json();
+
+    if (data.ok) {
+      sessionStorage.setItem('krystal_user', usuarioPendiente);
+      mostrarMenu(usuarioPendiente);
+    } else {
+      showMsg(msg, '❌ ' + (data.error || 'Error al guardar'), 'err');
+    }
+  } catch (err) {
+    showMsg(msg, '⚠ Error de conexión', 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Crear Clave e Ingresar';
+  }
+}
+
+// ─── CAMBIAR CLAVE (usuario ya autenticado) ───────────────────
+function mostrarCambiarClave() {
+  usuarioPendiente = sessionStorage.getItem('krystal_user');
+  document.getElementById('menuWrap').classList.remove('show');
+  document.getElementById('loginBox').classList.remove('hidden');
+  document.getElementById('ncNombre').textContent = usuarioPendiente;
+  document.querySelector('.nc-title').innerHTML =
+    '🔑 Cambiar clave de <strong>' + usuarioPendiente + '</strong>';
+  document.getElementById('formLogin').style.display = 'none';
+  document.getElementById('formNuevaClave').classList.add('show');
+}
+
+// ─── UI HELPERS ───────────────────────────────────────────────
+function mostrarMenu(usuario) {
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('menuWrap').classList.add('show');
+  document.getElementById('userLabel').textContent = usuario;
+}
+
+function mostrarFormNuevaClave(usuario) {
+  document.getElementById('ncNombre').textContent = usuario;
+  document.getElementById('formLogin').style.display = 'none';
+  document.getElementById('formNuevaClave').classList.add('show');
+}
+
+function volverLogin() {
+  document.getElementById('formLogin').style.display = 'flex';
+  document.getElementById('formNuevaClave').classList.remove('show');
+  document.getElementById('inpNueva').value = '';
+  document.getElementById('inpConfirma').value = '';
+}
+
+function cerrarSesion() {
+  sessionStorage.removeItem('krystal_user');
+  location.reload();
+}
+
+function showMsg(el, txt, tipo) {
+  el.textContent = txt;
+  el.className = 'login-msg ' + tipo;
+}
+</script>
 </body>
 </html>
