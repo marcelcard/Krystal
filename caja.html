@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caja — Krystal Soluciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#111;--yellow:#FFE600;--yd:#D4C000;
+  --gray:#f4f4f4;--border:#ddd;--text:#222;
+  --muted:#666;--white:#fff;--shadow:rgba(0,0,0,.10);
+  --red:#e53935;--green:#2e7d32;--blue:#1565c0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:#e8e8e8;color:var(--text);min-height:100vh;padding-bottom:80px}
+
+/* TOP BAR */
+.topbar{background:var(--black);color:var(--white);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.topbar h1{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;letter-spacing:.05em;text-transform:uppercase}
+.topbar-btns{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.btn{padding:.45rem 1.1rem;border-radius:5px;border:none;font-family:'Barlow',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.04em}
+.btn-yellow{background:var(--yellow);color:var(--black)}
+.btn-yellow:hover{background:var(--yd)}
+.btn-outline{background:none;border:1.5px solid rgba(255,255,255,.3);color:var(--white)}
+.btn-outline:hover{border-color:var(--yellow);color:var(--yellow)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.user-badge{font-size:.75rem;color:rgba(255,255,255,.5);padding:.45rem .3rem}
+
+/* BANNER */
+.banner{padding:.55rem 1.5rem;font-size:.78rem;font-weight:600;display:none}
+.banner.show{display:block}
+.banner.info{background:#e3f2fd;color:var(--blue)}
+.banner.ok{background:#e8f5e9;color:var(--green)}
+.banner.err{background:#ffebee;color:var(--red)}
+
+/* MAIN */
+.main{max-width:760px;margin:1.5rem auto;padding:0 1rem;display:grid;gap:1.2rem}
+
+/* CARD */
+.card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);overflow:hidden}
+
+/* KR HEADER */
+.kr-header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem;padding:1rem 1.2rem .8rem;border-bottom:2px solid var(--black)}
+.kr-logo-area{display:flex;flex-direction:column;align-items:center}
+.kr-logo-svg{width:48px}
+.kr-brand{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;line-height:1.1;text-align:center;margin-top:.2rem}
+.kr-center{text-align:center}
+.kr-title1{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em}
+.kr-title2{background:var(--yellow);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em;padding:.15rem .9rem;margin:.25rem 0;display:inline-block;border-radius:3px}
+.kr-phone{font-size:.78rem;font-weight:600}
+.kr-doc-box{text-align:right}
+.kr-doc-label{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.kr-fecha-auto{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+.kr-fecha-auto span{font-weight:700;color:var(--text)}
+
+/* FORMULARIO */
+.form-body{padding:1.2rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-field{display:flex;flex-direction:column;gap:.4rem}
+.form-field.full{grid-column:1/-1}
+.form-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.form-input{border:2px solid var(--border);border-radius:8px;padding:.75rem 1rem;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--text);transition:border-color .2s;width:100%}
+.form-input:focus{outline:none;border-color:var(--black);background:#fffde7}
+.form-input::placeholder{color:#ccc}
+input[type=date].form-input{cursor:pointer}
+
+/* MONTO */
+.monto-field{grid-column:1/-1}
+.monto-input{border:2px solid var(--border);border-radius:8px;padding:.85rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);text-align:right;transition:border-color .2s;width:100%}
+.monto-input:focus{outline:none;border-color:var(--black);background:#fffde7}
+.monto-input::placeholder{color:#ccc;font-weight:400;font-size:1.1rem}
+
+/* USUARIO BADGE */
+.usuario-display{background:var(--gray);border-radius:8px;padding:.75rem 1rem;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--muted);display:flex;align-items:center;gap:.5rem}
+.usuario-display strong{color:var(--text);text-transform:capitalize}
+
+/* TOTAL BAR */
+.total-bar{background:var(--black);margin:1rem 0 0;border-radius:8px;padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+.total-bar .tl{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.total-bar .tv{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--yellow)}
+
+/* GUARDAR */
+.save-wrap{padding:.8rem 1.2rem 1.2rem;margin-top:.5rem}
+.btn-save-big{width:100%;padding:.9rem;background:var(--yellow);color:var(--black);border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-save-big:hover{background:var(--yd)}
+.btn-save-big:disabled{opacity:.5;cursor:not-allowed}
+
+/* BOTTOM */
+.kr-bottom{background:var(--black);color:var(--white);padding:.55rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;font-size:.72rem}
+
+/* RESUMEN SEMANAL */
+.semana-card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);overflow:hidden}
+.semana-header{background:var(--black);color:var(--white);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.semana-header-left{display:flex;align-items:center;gap:.8rem}
+.semana-icono{font-size:1.1rem}
+.semana-titulo{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.semana-rango{font-size:.78rem;color:rgba(255,255,255,.5);font-weight:600;letter-spacing:.04em}
+.semana-body{padding:1.2rem}
+.semana-loading{text-align:center;padding:2rem;color:var(--muted);font-size:.85rem}
+
+/* TABLA SEMANAL */
+.tabla-semana{width:100%;border-collapse:collapse;font-size:.84rem}
+.tabla-semana th{padding:.55rem .6rem;text-align:center;font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--black);background:var(--gray)}
+.tabla-semana th.left{text-align:left}
+.tabla-semana td{padding:.5rem .6rem;border-bottom:1px solid var(--border);text-align:center;vertical-align:middle}
+.tabla-semana td.left{text-align:left;font-weight:600}
+.tabla-semana td.monto{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700}
+.tabla-semana td.monto.verde{color:var(--green)}
+.tabla-semana tr.hoy td{background:#fffde7}
+.tabla-semana tr.subtotal td{background:#f9f9f9;font-style:italic;font-size:.78rem;color:var(--muted)}
+.tabla-semana tr.subtotal td.monto{color:var(--green);font-style:normal}
+.tabla-semana tr.total-row td{background:var(--black);color:var(--white);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:1rem}
+.tabla-semana tr.total-row td.monto{color:var(--yellow);font-size:1.1rem}
+.dia-badge{display:inline-block;background:var(--yellow);color:var(--black);font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:3px;text-transform:uppercase;letter-spacing:.04em;margin-left:.4rem;vertical-align:middle}
+.sin-dato{color:#ccc;font-style:italic;font-size:.78rem}
+
+/* BARRA VISUAL */
+.barra-wrap{display:flex;align-items:center;gap:.4rem;justify-content:flex-end}
+.barra{height:7px;border-radius:4px;background:var(--yellow);min-width:2px;transition:width .5s}
+.barra.azul{background:var(--blue)}
+
+/* LEYENDA */
+.leyenda{display:flex;gap:1rem;padding:.6rem 1.2rem;background:#fafafa;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted)}
+.leyenda-item{display:flex;align-items:center;gap:.3rem;font-weight:600}
+.leyenda-dot{width:10px;height:10px;border-radius:2px}
+
+/* SAVE BAR */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--black);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;z-index:200;flex-wrap:wrap}
+.st{font-size:.78rem}
+.st.unsaved{color:var(--yellow)}
+.st.saved{color:#66bb6a}
+.st.loading{color:#aaa}
+.st.err{color:#ef5350}
+
+@media(max-width:560px){
+  .kr-header{grid-template-columns:1fr;text-align:center}
+  .form-grid{grid-template-columns:1fr}
+  .form-field.full{grid-column:1}
+  .monto-field{grid-column:1}
+}
+@media print{
+  .topbar,.save-bar,.banner,.save-wrap{display:none!important}
+  body{background:white;padding:0}
+  .main{margin:0;padding:0;max-width:100%}
+  .card,.semana-card{box-shadow:none;border-radius:0}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>💵 Caja · Krystal</h1>
+  <div class="topbar-btns">
+    <span class="user-badge" id="userBadge">👤 —</span>
+    <button class="btn btn-outline" onclick="cargarSemana()">🔄 Actualizar</button>
+    <button class="btn btn-outline" onclick="window.location.href='index.html'">← Menú</button>
+    <button class="btn btn-yellow" onclick="guardarEntrega()">💾 Guardar</button>
+  </div>
+</div>
+
+<div class="banner" id="banner"></div>
+
+<div class="main">
+
+  <!-- FORMULARIO -->
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="kr-header">
+      <div class="kr-logo-area">
+        <svg class="kr-logo-svg" viewBox="0 0 60 70" fill="none">
+          <rect x="8" y="10" width="10" height="50" fill="#111"/>
+          <rect x="22" y="25" width="10" height="35" fill="#111"/>
+          <rect x="36" y="15" width="10" height="45" fill="#111"/>
+          <rect x="8" y="8" width="38" height="5" fill="#FFE600"/>
+        </svg>
+        <div class="kr-brand">KRYSTAL<br>SOLUCIONES</div>
+      </div>
+      <div class="kr-center">
+        <div class="kr-title1">VIDRIO · ACERO · ALUMINIO</div>
+        <div class="kr-title2">ENTREGA DE EFECTIVO</div>
+        <div class="kr-phone">📱 313 267 47 07 &nbsp;·&nbsp; 313 212 76 92</div>
+      </div>
+      <div class="kr-doc-box">
+        <div class="kr-doc-label">Registro</div>
+        <div class="kr-fecha-auto">Fecha: <span id="fechaAuto">—</span></div>
+        <div class="kr-fecha-auto">Hora: <span id="horaAuto">—</span></div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-body">
+      <div class="form-grid">
+
+        <div class="form-field">
+          <div class="form-label">📅 Fecha Entrega</div>
+          <input type="date" class="form-input" id="f_fecha" oninput="markDirty()">
+        </div>
+
+        <div class="form-field">
+          <div class="form-label">👤 Registrado por</div>
+          <div class="usuario-display">👤 <strong id="usuarioDisplay">—</strong></div>
+        </div>
+
+        <div class="form-field monto-field" style="grid-column:1/-1">
+          <div class="form-label">💵 Monto Entregado</div>
+          <input type="number" class="monto-input" id="f_monto" placeholder="$ 0" min="0" oninput="markDirty()">
+        </div>
+
+        <div class="form-field full">
+          <div class="form-label">📝 Observaciones</div>
+          <input type="text" class="form-input" id="f_obs" placeholder="Descripción de la entrega..." oninput="markDirty()">
+        </div>
+
+      </div>
+
+      <!-- TOTAL -->
+      <div class="total-bar">
+        <div class="tl">Monto a Entregar</div>
+        <div class="tv" id="montoDisplay">$ 0</div>
+      </div>
+    </div>
+
+    <!-- GUARDAR -->
+    <div class="save-wrap">
+      <button class="btn-save-big" id="btnGuardar" onclick="guardarEntrega()">
+        💾 Registrar Entrega
+      </button>
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="kr-bottom">
+      <span>📍 Calle 68 No. 27-06 (Esquina) · Bogotá</span>
+      <span>✉️ krystaleros@gmail.com</span>
+      <span>📘📷 @krystalsoluciones</span>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- RESUMEN SEMANAL -->
+  <div class="semana-card">
+    <div class="semana-header">
+      <div class="semana-header-left">
+        <span class="semana-icono">📊</span>
+        <span class="semana-titulo">Resumen Semanal</span>
+      </div>
+      <span class="semana-rango" id="semanaRango">—</span>
+    </div>
+    <div class="leyenda">
+      <div class="leyenda-item"><div class="leyenda-dot" style="background:var(--yellow)"></div>Entrega Caja</div>
+      <div class="leyenda-item"><div class="leyenda-dot" style="background:var(--blue)"></div>Venta Efectivo (hoja Ventas)</div>
+    </div>
+    <div class="semana-body">
+      <div class="semana-loading" id="semanaLoading">Cargando resumen semanal...</div>
+      <table class="tabla-semana" id="tablaSemana" style="display:none">
+        <thead>
+          <tr>
+            <th class="left">Día</th>
+            <th>Entrega Caja</th>
+            <th>Venta Efectivo</th>
+            <th>Diferencia</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="semanaBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <div class="st unsaved" id="saveStatus">Nueva entrega de efectivo</div>
+  <button class="btn btn-yellow" onclick="guardarEntrega()">💾 Registrar Entrega</button>
+</div>
+
+<script>
+// ─── VERIFICAR SESIÓN ─────────────────────────────────────────
+const _user = sessionStorage.getItem('krystal_user');
+if (!_user) window.location.href = 'index.html';
+
+const SCRIPT_URL = localStorage.getItem('krystal_script_url') ||
+  'https://script.google.com/macros/s/AKfycbxusVBQq9FjAMKrzabtrmjx7uSvyLJXtG3ZiTf7lCUExOvtgs73AzxbxPP91ltTg3wI/exec';
+
+let dirty = false;
+
+// ─── INIT ─────────────────────────────────────────────────────
+window.onload = async () => {
+  // Mostrar usuario
+  document.getElementById('userBadge').textContent    = '👤 ' + _user;
+  document.getElementById('usuarioDisplay').textContent = _user;
+
+  // Fechas automáticas
+  const hoy = new Date();
+  document.getElementById('fechaAuto').textContent =
+    hoy.toLocaleDateString('es-CO', {day:'2-digit', month:'2-digit', year:'numeric'});
+  document.getElementById('horaAuto').textContent =
+    hoy.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  document.getElementById('f_fecha').value = hoy.toISOString().split('T')[0];
+
+  // Reloj en tiempo real
+  setInterval(() => {
+    document.getElementById('horaAuto').textContent =
+      new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  }, 1000);
+
+  // Actualizar display de monto
+  document.getElementById('f_monto').addEventListener('input', () => {
+    const v = parseFloat(document.getElementById('f_monto').value) || 0;
+    document.getElementById('montoDisplay').textContent = fmt(v);
+  });
+
+  await cargarSemana();
+};
+
+// ─── GUARDAR ENTREGA ──────────────────────────────────────────
+async function guardarEntrega() {
+  const fecha = document.getElementById('f_fecha').value;
+  const monto = parseFloat(document.getElementById('f_monto').value) || 0;
+  const obs   = document.getElementById('f_obs').value;
+
+  if (!fecha) { setBanner('⚠ Selecciona la fecha de entrega', 'err', 4000); return; }
+  if (monto <= 0) { setBanner('⚠ Ingresa un monto mayor a cero', 'err', 4000); return; }
+
+  const btn = document.getElementById('btnGuardar');
+  btn.disabled = true;
+  btn.textContent = '⏳ Guardando...';
+  setStatus('⏳ Sincronizando...', 'loading');
+
+  const payload = {
+    action:  'saveCaja',
+    usuario: _user,
+    fecha,
+    monto:   String(monto),
+    obs,
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      cache:  'no-cache',
+      body:   JSON.stringify(payload),
+    });
+
+    setBanner('✓ Entrega registrada · ' + fmt(monto), 'ok', 5000);
+    setStatus('✓ Guardado · ' + new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}), 'saved');
+    dirty = false;
+
+    // Limpiar
+    setTimeout(() => {
+      document.getElementById('f_monto').value = '';
+      document.getElementById('f_obs').value   = '';
+      document.getElementById('montoDisplay').textContent = '$ 0';
+      document.getElementById('f_fecha').value = new Date().toISOString().split('T')[0];
+      btn.textContent = '💾 Registrar Entrega';
+      btn.disabled    = false;
+      setStatus('Nueva entrega de efectivo', 'unsaved');
+      setTimeout(() => cargarSemana(), 1500);
+    }, 1200);
+
+  } catch (err) {
+    setBanner('❌ Error de conexión', 'err');
+    btn.textContent = '💾 Registrar Entrega';
+    btn.disabled    = false;
+  }
+}
+
+// ─── CARGAR RESUMEN SEMANAL ───────────────────────────────────
+async function cargarSemana() {
+  document.getElementById('semanaLoading').style.display = 'block';
+  document.getElementById('tablaSemana').style.display   = 'none';
+
+  try {
+    const url  = SCRIPT_URL + '?action=getCajaSemana&t=' + Date.now();
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    renderSemana(data);
+  } catch (err) {
+    document.getElementById('semanaLoading').textContent =
+      '⚠ No se pudo cargar el resumen: ' + err.message;
+  }
+}
+
+// ─── RENDER SEMANA ────────────────────────────────────────────
+function renderSemana(data) {
+  const tbody   = document.getElementById('semanaBody');
+  const loading = document.getElementById('semanaLoading');
+  const tabla   = document.getElementById('tablaSemana');
+  const rango   = document.getElementById('semanaRango');
+
+  const dias = data.semana || [];
+  if (!dias.length) { loading.textContent = 'Sin datos esta semana'; return; }
+
+  // Rango
+  rango.textContent = fmtFecha(dias[0].fecha) + ' — ' + fmtFecha(dias[dias.length-1].fecha);
+
+  const hoy    = new Date().toISOString().split('T')[0];
+  const maxVal = Math.max(...dias.map(d => Math.max(d.caja || 0, d.efectivo || 0)), 1);
+
+  let totalCaja = 0, totalEfectivo = 0;
+  let html = '';
+
+  dias.forEach(d => {
+    const esHoy   = d.fecha === hoy;
+    const caja    = d.caja     || 0;
+    const efect   = d.efectivo || 0;
+    const diff    = efect - caja;
+    const hayData = caja > 0 || efect > 0;
+
+    totalCaja     += caja;
+    totalEfectivo += efect;
+
+    const pctCaja  = Math.round(caja  / maxVal * 100);
+    const pctEfect = Math.round(efect / maxVal * 100);
+
+    html += `<tr class="${esHoy ? 'hoy' : ''}">
+      <td class="left">
+        ${d.diaNombre}
+        ${esHoy ? '<span class="dia-badge">HOY</span>' : ''}
+      </td>
+      <td class="monto">${caja  > 0 ? fmt(caja)  : '<span class="sin-dato">—</span>'}</td>
+      <td class="monto verde">${efect > 0 ? fmt(efect) : '<span class="sin-dato">—</span>'}</td>
+      <td class="monto ${diff >= 0 ? 'verde' : ''}" style="${diff < 0 ? 'color:var(--red)' : ''}">
+        ${hayData ? (diff >= 0 ? '+' : '') + fmt(diff) : '<span class="sin-dato">—</span>'}
+      </td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
+          <div style="display:flex;align-items:center;gap:4px">
+            <div style="height:5px;border-radius:3px;background:var(--yellow);width:${pctCaja}px;min-width:${caja>0?2:0}px"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div style="height:5px;border-radius:3px;background:var(--blue);width:${pctEfect}px;min-width:${efect>0?2:0}px"></div>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  });
+
+  // Fila total
+  const diffTotal = totalEfectivo - totalCaja;
+  html += `<tr class="total-row">
+    <td class="left">TOTAL SEMANA</td>
+    <td class="monto">${fmt(totalCaja)}</td>
+    <td class="monto">${fmt(totalEfectivo)}</td>
+    <td class="monto" style="color:${diffTotal >= 0 ? 'var(--yellow)' : 'var(--red)'}">
+      ${diffTotal >= 0 ? '+' : ''}${fmt(diffTotal)}
+    </td>
+    <td></td>
+  </tr>`;
+
+  tbody.innerHTML = html;
+  loading.style.display = 'none';
+  tabla.style.display   = 'table';
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function fmt(n) {
+  return '$ ' + Math.round(n || 0).toLocaleString('es-CO');
+}
+
+function fmtFecha(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  const M = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return parseInt(d) + ' ' + M[parseInt(m)-1];
+}
+
+let _bt = null;
+function setBanner(msg, tipo, autoHide) {
+  const el = document.getElementById('banner');
+  el.textContent = msg;
+  el.className = 'banner show ' + tipo;
+  clearTimeout(_bt);
+  if (autoHide) _bt = setTimeout(() => { el.className = 'banner'; }, autoHide);
+}
+
+function setStatus(msg, tipo) {
+  const el = document.getElementById('saveStatus');
+  el.textContent = msg;
+  el.className = 'st ' + tipo;
+}
+
+function markDirty() {
+  dirty = true;
+  setStatus('⚠ Cambios sin guardar', 'unsaved');
+}
+
+window.onbeforeunload = () => { if (dirty) return ''; };
+</script>
+</body>
+</html>

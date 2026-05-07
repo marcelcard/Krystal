@@ -56,7 +56,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 
 .btn-cambiar-clave{background:none;border:1.5px solid #444;color:rgba(255,255,255,.5);border-radius:5px;padding:.3rem .8rem;font-family:'Barlow',sans-serif;font-size:.75rem;cursor:pointer;transition:all .2s}
 .btn-cambiar-clave:hover{border-color:var(--yellow);color:var(--yellow)}
 
-.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
 .modulo{background:#222;border:2px solid #333;border-radius:14px;padding:1.8rem 1.5rem;text-align:center;text-decoration:none;color:var(--white);transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:.8rem;position:relative;overflow:hidden}
 .modulo::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 .modulo:hover{border-color:var(--yellow);background:#2a2a2a;transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,230,0,.12)}
@@ -70,7 +70,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 
 footer{background:#111;border-top:1px solid #222;padding:1rem 1.5rem;text-align:center;font-size:.72rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
 footer span{color:var(--yellow)}
 
-@media(max-width:500px){
+@media(max-width:600px){
   .menu-grid{grid-template-columns:1fr}
   .kr-brand-text h1{font-size:1.6rem}
 }
@@ -176,6 +176,20 @@ footer span{color:var(--yellow)}
         <div class="modulo-title">Gastos</div>
         <div class="modulo-desc">Registro de gastos por proveedor y medio de pago</div>
         <div class="modulo-badge">Egresos</div>
+      </a>
+      <a class="modulo" href="caja.html">
+        <div class="modulo-icon">💵</div>
+        <div class="modulo-title">Caja</div>
+        <div class="modulo-desc">Entrega de efectivo y control de caja diaria</div>
+        <div class="modulo-badge">Efectivo</div>
+      </a>
+
+      <!-- Solo visible para marcel -->
+      <a class="modulo modulo-reporte" id="moduloReportes" href="reporte.html" style="display:none;border-color:#333;background:#1a1a1a">
+        <div class="modulo-icon">📊</div>
+        <div class="modulo-title">Reportes</div>
+        <div class="modulo-desc">Utilidad bruta y margen por período</div>
+        <div class="modulo-badge" style="background:#333;color:#aaa">Admin</div>
       </a>
     </div>
   </div>
@@ -301,6 +315,10 @@ function mostrarMenu(usuario) {
   document.getElementById('loginBox').classList.add('hidden');
   document.getElementById('menuWrap').classList.add('show');
   document.getElementById('userLabel').textContent = usuario;
+  // Mostrar Reportes solo para marcel
+  if (usuario === 'marcel') {
+    document.getElementById('moduloReportes').style.display = 'flex';
+  }
 }
 
 function mostrarFormNuevaClave(usuario) {
