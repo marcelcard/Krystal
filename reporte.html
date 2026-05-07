@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes — Krystal Soluciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#111;--yellow:#FFE600;--yd:#D4C000;
+  --gray:#f4f4f4;--border:#ddd;--text:#222;
+  --muted:#666;--white:#fff;--shadow:rgba(0,0,0,.10);
+  --red:#e53935;--green:#2e7d32;--blue:#1565c0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:#e8e8e8;color:var(--text);min-height:100vh;padding-bottom:40px}
+
+.topbar{background:var(--black);color:var(--white);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.topbar h1{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;letter-spacing:.05em;text-transform:uppercase}
+.topbar-right{display:flex;align-items:center;gap:.8rem}
+.user-badge{font-size:.75rem;color:rgba(255,255,255,.5)}
+.btn{padding:.45rem 1.1rem;border-radius:5px;border:none;font-family:'Barlow',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.04em}
+.btn-yellow{background:var(--yellow);color:var(--black)}
+.btn-yellow:hover{background:var(--yd)}
+.btn-outline{background:none;border:1.5px solid rgba(255,255,255,.3);color:var(--white)}
+.btn-outline:hover{border-color:var(--yellow);color:var(--yellow)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.banner{padding:.55rem 1.5rem;font-size:.78rem;font-weight:600;display:none}
+.banner.show{display:block}
+.banner.info{background:#e3f2fd;color:var(--blue)}
+.banner.err{background:#ffebee;color:var(--red)}
+
+.main{max-width:960px;margin:1.5rem auto;padding:0 1rem;display:grid;gap:1.2rem}
+
+/* FILTRO */
+.filtro-card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);padding:1.5rem}
+.filtro-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.filtro-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:1rem;align-items:end}
+.filtro-field{display:flex;flex-direction:column;gap:.4rem}
+.filtro-field label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.filtro-field input{border:2px solid var(--border);border-radius:7px;padding:.6rem .8rem;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--text);cursor:pointer}
+.filtro-field input:focus{outline:none;border-color:var(--black)}
+.btn-calcular{background:var(--black);color:var(--yellow);border:none;border-radius:7px;padding:.7rem 1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-calcular:hover{background:#222}
+.btn-calcular:disabled{opacity:.5;cursor:not-allowed}
+
+/* RESULTADOS */
+.resultados{display:none}
+.resultados.show{display:grid;gap:1.2rem}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.kpi{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);padding:1.2rem 1.5rem;border-top:4px solid var(--border)}
+.kpi.verde{border-top-color:var(--green)}
+.kpi.rojo{border-top-color:var(--red)}
+.kpi.amarillo{border-top-color:var(--yellow)}
+.kpi.azul{border-top-color:var(--blue)}
+.kpi.negro{border-top-color:var(--black)}
+.kpi-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.4rem}
+.kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);line-height:1}
+.kpi-sub{font-size:.75rem;color:var(--muted);margin-top:.3rem}
+.kpi-val.positivo{color:var(--green)}
+.kpi-val.negativo{color:var(--red)}
+
+/* MARGEN BAR */
+.margen-card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);padding:1.5rem}
+.margen-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.margen-row{display:grid;grid-template-columns:160px 1fr auto;align-items:center;gap:1rem;margin-bottom:.8rem}
+.margen-row:last-child{margin-bottom:0}
+.margen-lbl{font-size:.82rem;font-weight:600}
+.margen-bar-wrap{background:var(--gray);border-radius:4px;height:10px;overflow:hidden}
+.margen-bar{height:100%;border-radius:4px;transition:width .6s ease}
+.margen-pct{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;min-width:45px;text-align:right}
+
+/* TABLA DETALLE */
+.detalle-card{background:var(--white);border-radius:10px;box-shadow:0 3px 20px var(--shadow);overflow:hidden}
+.detalle-header{background:var(--black);color:var(--white);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+.detalle-header span{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+thead tr{background:var(--gray)}
+th{padding:.5rem .6rem;text-align:center;font-weight:700;font-size:.70rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--black)}
+th.left{text-align:left}
+td{padding:.55rem .6rem;border-bottom:1px solid var(--border);text-align:center}
+td.left{text-align:left;font-weight:600}
+td.monto{font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:700}
+td.verde{color:var(--green)}
+td.rojo{color:var(--red)}
+tr:last-child td{border-bottom:none}
+tr.total-row td{background:var(--black);color:var(--white);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:.95rem}
+tr.total-row td.monto{color:var(--yellow)}
+
+/* LOADING */
+.loading-overlay{text-align:center;padding:3rem;color:var(--muted);font-size:.9rem;display:none}
+.loading-overlay.show{display:block}
+
+@media(max-width:600px){
+  .filtro-grid{grid-template-columns:1fr 1fr;gap:.8rem}
+  .btn-calcular{grid-column:1/-1}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .margen-row{grid-template-columns:120px 1fr auto}
+}
+@media print{
+  .topbar,.filtro-card,.banner{display:none!important}
+  body{background:white;padding:0}
+  .main{margin:0;padding:0;max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>📊 Reportes · Krystal</h1>
+  <div class="topbar-right">
+    <span class="user-badge">👤 <span id="userLabel">—</span></span>
+    <button class="btn btn-outline" onclick="window.location.href='index.html'">← Menú</button>
+    <button class="btn btn-outline" onclick="window.print()">🖨️ Imprimir</button>
+  </div>
+</div>
+
+<div class="banner" id="banner"></div>
+
+<div class="main">
+
+  <!-- FILTRO -->
+  <div class="filtro-card">
+    <div class="filtro-title">📅 Período de análisis</div>
+    <div class="filtro-grid">
+      <div class="filtro-field">
+        <label>Desde</label>
+        <input type="date" id="fDesde">
+      </div>
+      <div class="filtro-field">
+        <label>Hasta</label>
+        <input type="date" id="fHasta">
+      </div>
+      <button class="btn-calcular" id="btnCalc" onclick="calcularReporte()">
+        ▶ Calcular
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loadingOverlay">
+    ⏳ Calculando resultados...
+  </div>
+
+  <!-- RESULTADOS -->
+  <div class="resultados" id="resultados">
+
+    <!-- KPIs PRINCIPALES -->
+    <div class="kpi-grid">
+      <div class="kpi amarillo">
+        <div class="kpi-lbl">Total Ventas</div>
+        <div class="kpi-val" id="kpi_ventas">$ 0</div>
+        <div class="kpi-sub" id="kpi_ventas_sub">0 remisiones</div>
+      </div>
+      <div class="kpi rojo">
+        <div class="kpi-lbl">Costo de Ventas</div>
+        <div class="kpi-val" id="kpi_costo">$ 0</div>
+        <div class="kpi-sub">Costo prom. ponderado</div>
+      </div>
+      <div class="kpi verde">
+        <div class="kpi-lbl">Utilidad Bruta</div>
+        <div class="kpi-val" id="kpi_ubruta">$ 0</div>
+        <div class="kpi-sub" id="kpi_margen_bruto">Margen: 0%</div>
+      </div>
+      <div class="kpi azul">
+        <div class="kpi-lbl">Total Gastos</div>
+        <div class="kpi-val" id="kpi_gastos">$ 0</div>
+        <div class="kpi-sub">Gastos operativos</div>
+      </div>
+      <div class="kpi negro">
+        <div class="kpi-lbl">Utilidad Neta</div>
+        <div class="kpi-val" id="kpi_uneta">$ 0</div>
+        <div class="kpi-sub" id="kpi_margen_neto">Margen: 0%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Ventas Declaradas</div>
+        <div class="kpi-val" id="kpi_vdecl">$ 0</div>
+        <div class="kpi-sub">Caja registrada</div>
+      </div>
+    </div>
+
+    <!-- BARRAS DE MARGEN -->
+    <div class="margen-card">
+      <div class="margen-title">Distribución del Ingreso</div>
+      <div class="margen-row">
+        <div class="margen-lbl">Costo de Ventas</div>
+        <div class="margen-bar-wrap"><div class="margen-bar" id="bar_costo" style="background:var(--red);width:0%"></div></div>
+        <div class="margen-pct" id="pct_costo" style="color:var(--red)">0%</div>
+      </div>
+      <div class="margen-row">
+        <div class="margen-lbl">Utilidad Bruta</div>
+        <div class="margen-bar-wrap"><div class="margen-bar" id="bar_ubruta" style="background:var(--green);width:0%"></div></div>
+        <div class="margen-pct" id="pct_ubruta" style="color:var(--green)">0%</div>
+      </div>
+      <div class="margen-row">
+        <div class="margen-lbl">Gastos</div>
+        <div class="margen-bar-wrap"><div class="margen-bar" id="bar_gastos" style="background:var(--blue);width:0%"></div></div>
+        <div class="margen-pct" id="pct_gastos" style="color:var(--blue)">0%</div>
+      </div>
+      <div class="margen-row">
+        <div class="margen-lbl">Utilidad Neta</div>
+        <div class="margen-bar-wrap"><div class="margen-bar" id="bar_uneta" style="background:var(--black);width:0%"></div></div>
+        <div class="margen-pct" id="pct_uneta" style="color:var(--text)">0%</div>
+      </div>
+    </div>
+
+    <!-- DETALLE POR PRODUCTO -->
+    <div class="detalle-card">
+      <div class="detalle-header">
+        <span>Detalle por Producto</span>
+        <span id="detalle_periodo" style="font-size:.75rem;color:rgba(255,255,255,.5)"></span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th class="left">Producto</th>
+            <th>Unidades</th>
+            <th>Venta Total</th>
+            <th>Costo Unit.</th>
+            <th>Costo Total</th>
+            <th>Utilidad</th>
+            <th>Margen</th>
+          </tr>
+        </thead>
+        <tbody id="detalleBody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /resultados -->
+</div><!-- /main -->
+
+<script>
+// ─── VERIFICAR SESIÓN Y PERMISOS ──────────────────────────────
+const _user = sessionStorage.getItem('krystal_user');
+if (!_user) window.location.href = 'index.html';
+if (_user !== 'marcel') window.location.href = 'index.html';
+document.getElementById('userLabel').textContent = _user;
+
+const SCRIPT_URL = localStorage.getItem('krystal_script_url') ||
+  'https://script.google.com/macros/s/AKfycbxusVBQq9FjAMKrzabtrmjx7uSvyLJXtG3ZiTf7lCUExOvtgs73AzxbxPP91ltTg3wI/exec';
+
+// ─── INIT ─────────────────────────────────────────────────────
+window.onload = () => {
+  // Fechas por defecto: primer día del mes actual hasta hoy
+  const hoy    = new Date();
+  const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  document.getElementById('fDesde').value = inicio.toISOString().split('T')[0];
+  document.getElementById('fHasta').value = hoy.toISOString().split('T')[0];
+};
+
+// ─── CALCULAR REPORTE ─────────────────────────────────────────
+async function calcularReporte() {
+  const desde = document.getElementById('fDesde').value;
+  const hasta = document.getElementById('fHasta').value;
+
+  if (!desde || !hasta) {
+    setBanner('⚠ Selecciona las fechas de inicio y fin', 'err', 4000);
+    return;
+  }
+  if (desde > hasta) {
+    setBanner('⚠ La fecha inicio no puede ser mayor que la fecha fin', 'err', 4000);
+    return;
+  }
+
+  document.getElementById('btnCalc').disabled = true;
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('resultados').classList.remove('show');
+
+  try {
+    const url  = `${SCRIPT_URL}?action=getReporte&desde=${desde}&hasta=${hasta}&t=${Date.now()}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    if (data.error) throw new Error(data.error);
+
+    renderReporte(data);
+
+  } catch (err) {
+    setBanner('❌ Error al calcular: ' + err.message, 'err');
+  } finally {
+    document.getElementById('btnCalc').disabled = false;
+    document.getElementById('loadingOverlay').classList.remove('show');
+  }
+}
+
+// ─── RENDER ───────────────────────────────────────────────────
+function renderReporte(d) {
+  // KPIs
+  document.getElementById('kpi_ventas').textContent     = fmt(d.totalVentas);
+  document.getElementById('kpi_ventas_sub').textContent = d.remisiones + ' remisiones';
+  document.getElementById('kpi_costo').textContent      = fmt(d.totalCostoVtas);
+  document.getElementById('kpi_gastos').textContent     = fmt(d.totalGastos);
+  document.getElementById('kpi_vdecl').textContent      = fmt(d.totalVentasDecl);
+
+  const uBruta = d.utilidadBruta;
+  const uNeta  = d.utilidadNeta;
+
+  const elUB = document.getElementById('kpi_ubruta');
+  elUB.textContent = fmt(uBruta);
+  elUB.className   = 'kpi-val ' + (uBruta >= 0 ? 'positivo' : 'negativo');
+  document.getElementById('kpi_margen_bruto').textContent = 'Margen: ' + d.margenBruto + '%';
+
+  const elUN = document.getElementById('kpi_uneta');
+  elUN.textContent = fmt(uNeta);
+  elUN.className   = 'kpi-val ' + (uNeta >= 0 ? 'positivo' : 'negativo');
+  document.getElementById('kpi_margen_neto').textContent = 'Margen: ' + d.margenNeto + '%';
+
+  // Barras
+  const tv = d.totalVentas || 1;
+  const pctCosto  = Math.min(100, Math.round(d.totalCostoVtas / tv * 100));
+  const pctUBruta = Math.max(0,   Math.round(uBruta           / tv * 100));
+  const pctGastos = Math.min(100, Math.round(d.totalGastos    / tv * 100));
+  const pctUNeta  = Math.max(0,   Math.round(uNeta            / tv * 100));
+
+  setBar('costo',  pctCosto);
+  setBar('ubruta', pctUBruta);
+  setBar('gastos', pctGastos);
+  setBar('uneta',  pctUNeta);
+
+  // Período en detalle
+  document.getElementById('detalle_periodo').textContent =
+    fmtFecha(d.desde) + ' — ' + fmtFecha(d.hasta);
+
+  // Tabla detalle
+  const tbody = document.getElementById('detalleBody');
+  let totalVta = 0, totalCosto = 0, totalUtil = 0;
+
+  tbody.innerHTML = (d.detalle || []).map(p => {
+    totalVta   += p.totalVta;
+    totalCosto += p.totalCosto;
+    const util  = p.totalVta - p.totalCosto;
+    totalUtil  += util;
+    return `<tr>
+      <td class="left">${p.id} · ${p.nombre}</td>
+      <td>${p.cant}</td>
+      <td class="monto">${fmt(p.totalVta)}</td>
+      <td class="monto">${fmt(p.costoUnit)}</td>
+      <td class="monto">${fmt(p.totalCosto)}</td>
+      <td class="monto ${util >= 0 ? 'verde' : 'rojo'}">${fmt(util)}</td>
+      <td class="monto ${p.margen >= 0 ? 'verde' : 'rojo'}">${p.margen}%</td>
+    </tr>`;
+  }).join('');
+
+  // Fila total
+  tbody.innerHTML += `<tr class="total-row">
+    <td class="left">TOTAL</td>
+    <td>—</td>
+    <td class="monto">${fmt(totalVta)}</td>
+    <td>—</td>
+    <td class="monto">${fmt(totalCosto)}</td>
+    <td class="monto">${fmt(totalUtil)}</td>
+    <td>—</td>
+  </tr>`;
+
+  document.getElementById('resultados').classList.add('show');
+  window.scrollTo({ top: 300, behavior: 'smooth' });
+}
+
+function setBar(id, pct) {
+  document.getElementById('bar_' + id).style.width = pct + '%';
+  document.getElementById('pct_' + id).textContent = pct + '%';
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function fmt(n) {
+  return '$ ' + Math.round(n || 0).toLocaleString('es-CO');
+}
+
+function fmtFecha(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  const M = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return parseInt(d) + ' ' + M[parseInt(m)-1] + ' ' + y;
+}
+
+let _bt = null;
+function setBanner(msg, tipo, autoHide) {
+  const el = document.getElementById('banner');
+  el.textContent = msg;
+  el.className = 'banner show ' + tipo;
+  clearTimeout(_bt);
+  if (autoHide) _bt = setTimeout(() => { el.className = 'banner'; }, autoHide);
+}
+</script>
+</body>
+</html>
