@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salidas de Inventario · Krystal Soluciones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --surface2:  #1e2630;
+      --border:    #30363d;
+      --accent:    #00c6a7;
+      --accent2:   #0099ff;
+      --danger:    #f85149;
+      --text:      #e6edf3;
+      --muted:     #7d8590;
+      --success:   #3fb950;
+      --gold:      #d29922;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+    header .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    header .badge {
+      margin-left: auto;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ─── MAIN LAYOUT ─── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    /* ─── CONFIG BANNER ─── */
+    #config-banner {
+      background: linear-gradient(135deg, #1a2332, #1e2a1e);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    #config-banner .warn-icon { font-size: 22px; }
+    #config-banner p { font-size: 13px; color: #c9a84c; flex: 1; min-width: 200px; }
+    #config-banner input {
+      background: var(--bg);
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 13px;
+      width: 340px;
+      max-width: 100%;
+    }
+    #config-banner button {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* ─── CARD ─── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ─── FORM GRID ─── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+    }
+    .field input, .field select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      padding: 9px 12px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .field input[readonly] {
+      color: var(--muted);
+      cursor: default;
+    }
+    .field select option { background: var(--surface2); }
+
+    /* ─── AUTOCOMPLETE DROPDOWN ─── */
+    .autocomplete-wrap { position: relative; }
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      border-top: none;
+      border-radius: 0 0 7px 7px;
+      z-index: 100;
+      max-height: 180px;
+      overflow-y: auto;
+      display: none;
+    }
+    .dropdown-list.open { display: block; }
+    .dropdown-item {
+      padding: 9px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover { background: var(--border); color: var(--accent); }
+
+    /* ─── PRODUCTOS TABLE ─── */
+    .productos-section { margin-top: 24px; }
+    .productos-section .sec-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    #productos-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .producto-row {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 2fr 90px 90px 70px auto;
+      gap: 12px;
+      align-items: end;
+      position: relative;
+    }
+    .producto-row .field label { color: #5a6472; }
+
+    .btn-remove-prod {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--danger);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 8px 10px;
+      transition: background 0.2s;
+      align-self: flex-end;
+    }
+    .btn-remove-prod:hover { background: rgba(248,81,73,0.12); }
+
+    .btn-add-prod {
+      margin-top: 12px;
+      background: transparent;
+      border: 1px dashed var(--accent);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .btn-add-prod:hover { background: rgba(0,198,167,0.08); }
+
+    /* ─── VALOR TOTAL ─── */
+    .total-row {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+    }
+    .total-row label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+    }
+    .total-row input {
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 600;
+      padding: 8px 14px;
+      width: 200px;
+      text-align: right;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .total-row input:focus {
+      outline: none;
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    /* ─── ACTIONS ─── */
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 11px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--text); color: var(--text); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 28px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+    /* ─── TOAST ─── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--success);
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 14px;
+      max-width: 340px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(.175,.885,.32,1.275);
+      z-index: 9999;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.error { border-left-color: var(--danger); }
+
+    /* ─── SPINNER ─── */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .producto-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .btn-remove-prod { grid-column: span 2; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Krystal Soluciones</div>
+    <div class="subtitle">Sistema de Salidas de Inventario</div>
+  </div>
+  <div class="badge" id="conn-badge">⚪ Sin configurar</div>
+</header>
+
+<main>
+
+  <!-- CONFIG BANNER -->
+  <div id="config-banner">
+    <div class="warn-icon">⚙️</div>
+    <p>Pega la URL de tu Google Apps Script para activar el guardado en Drive.</p>
+    <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/XXXXXXX/exec" />
+    <button onclick="saveScriptUrl()">Guardar</button>
+  </div>
+
+  <!-- ENCABEZADO REMISIÓN -->
+  <div class="card">
+    <div class="card-title">📋 Datos de la Remisión</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Fecha Registro (Sistema)</label>
+        <input type="text" id="fecha-registro" readonly />
+      </div>
+      <div class="field">
+        <label>Fecha Remisión</label>
+        <input type="date" id="fecha-remision" />
+      </div>
+      <div class="field autocomplete-wrap">
+        <label>Cliente</label>
+        <input type="text" id="cliente" autocomplete="off" placeholder="Nombre del cliente" oninput="showSuggestions('cliente')" onblur="hideSuggestions('cliente', 300)" />
+        <div class="dropdown-list" id="drop-cliente"></div>
+      </div>
+      <div class="field autocomplete-wrap">
+        <label>Nro. de Remisión</label>
+        <input type="text" id="nro-remision" autocomplete="off" placeholder="Ej: REM-001" oninput="showSuggestions('nro-remision')" onblur="hideSuggestions('nro-remision', 300)" />
+        <div class="dropdown-list" id="drop-nro-remision"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTOS -->
+  <div class="card">
+    <div class="card-title">📦 Productos</div>
+    <div class="productos-section">
+      <div class="sec-title">Ítems de la remisión</div>
+      <div id="productos-container">
+        <!-- Se agrega dinámicamente -->
+      </div>
+      <button class="btn-add-prod" onclick="addProducto()">+ Agregar producto</button>
+    </div>
+
+    <!-- VALOR TOTAL -->
+    <div class="total-row">
+      <label>Valor Total Remisión ($)</label>
+      <input type="number" id="valor-total" placeholder="0.00" min="0" step="0.01" />
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" onclick="clearForm()">Limpiar</button>
+      <button class="btn-primary" id="btn-submit" onclick="submitRemision()">Registrar Remisión</button>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIGURACIÓN
+// ═══════════════════════════════════════════
+const STORAGE_KEY_URL  = 'krystal_remv_url';
+const STORAGE_KEY_HIST = 'krystal_remv_hist';
+const MAX_HIST = 5;
+
+let scriptUrl = localStorage.getItem(STORAGE_KEY_URL) || '';
+let history   = JSON.parse(localStorage.getItem(STORAGE_KEY_HIST) || '{}');
+// history = { cliente: [], 'nro-remision': [], producto: [] }
+
+function saveScriptUrl() {
+  const val = document.getElementById('script-url').value.trim();
+  if (!val) return;
+  scriptUrl = val;
+  localStorage.setItem(STORAGE_KEY_URL, val);
+  document.getElementById('config-banner').style.display = 'none';
+  setConnBadge(true);
+  showToast('✅ URL guardada. Sistema listo.', false);
+}
+
+function setConnBadge(ok) {
+  const b = document.getElementById('conn-badge');
+  b.textContent = ok ? '🟢 Conectado' : '⚪ Sin configurar';
+  b.style.color = ok ? 'var(--success)' : '';
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.onload = function () {
+  // Fecha registro automática
+  const now = new Date();
+  document.getElementById('fecha-registro').value = formatDateTime(now);
+
+  // Fecha remisión = hoy
+  document.getElementById('fecha-remision').value = now.toISOString().split('T')[0];
+
+  // Producto por defecto
+  addProducto();
+
+  // URL guardada
+  if (scriptUrl) {
+    document.getElementById('script-url').value = scriptUrl;
+    document.getElementById('config-banner').style.display = 'none';
+    setConnBadge(true);
+  }
+};
+
+function formatDateTime(d) {
+  return d.toLocaleDateString('es-CO', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  });
+}
+
+// ═══════════════════════════════════════════
+// PRODUCTOS DINÁMICOS
+// ═══════════════════════════════════════════
+let prodCount = 0;
+
+function addProducto() {
+  prodCount++;
+  const id = prodCount;
+  const container = document.getElementById('productos-container');
+  const div = document.createElement('div');
+  div.className = 'producto-row';
+  div.id = `prod-${id}`;
+  div.innerHTML = `
+    <div class="field autocomplete-wrap">
+      <label>Producto</label>
+      <input type="text" id="prod-nombre-${id}" autocomplete="off"
+             placeholder="Ej: Vidrio templado 6mm"
+             oninput="showSuggestions('prod-nombre-${id}')"
+             onblur="hideSuggestions('prod-nombre-${id}', 300)" />
+      <div class="dropdown-list" id="drop-prod-nombre-${id}"></div>
+    </div>
+    <div class="field">
+      <label>Altura (m)</label>
+      <input type="number" id="prod-altura-${id}" placeholder="1.20" min="0" step="0.01" />
+    </div>
+    <div class="field">
+      <label>Grosor (mm)</label>
+      <input type="number" id="prod-grosor-${id}" placeholder="6" min="0" step="0.1" />
+    </div>
+    <div class="field">
+      <label>Cant.</label>
+      <input type="number" id="prod-cant-${id}" placeholder="1" min="1" step="1" value="1" />
+    </div>
+    <button class="btn-remove-prod" onclick="removeProducto(${id})" title="Eliminar">&times;</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeProducto(id) {
+  const rows = document.querySelectorAll('.producto-row');
+  if (rows.length <= 1) {
+    showToast('Debe haber al menos un producto.', true);
+    return;
+  }
+  document.getElementById(`prod-${id}`).remove();
+}
+
+function getProductos() {
+  const rows = document.querySelectorAll('.producto-row');
+  const result = [];
+  rows.forEach(row => {
+    const rid = row.id.replace('prod-', '');
+    result.push({
+      nombre:  document.getElementById(`prod-nombre-${rid}`)?.value.trim() || '',
+      altura:  document.getElementById(`prod-altura-${rid}`)?.value.trim() || '',
+      grosor:  document.getElementById(`prod-grosor-${rid}`)?.value.trim() || '',
+      cant:    document.getElementById(`prod-cant-${rid}`)?.value.trim() || '1',
+    });
+  });
+  return result.filter(p => p.nombre);
+}
+
+// ═══════════════════════════════════════════
+// AUTOCOMPLETE CON HISTORIAL
+// ═══════════════════════════════════════════
+function getFieldHistory(fieldId) {
+  // Normaliza clave para campos de productos dinámicos
+  const key = fieldId.startsWith('prod-nombre') ? 'producto' : fieldId;
+  return history[key] || [];
+}
+
+function showSuggestions(fieldId) {
+  const input = document.getElementById(fieldId);
+  const drop  = document.getElementById(`drop-${fieldId}`);
+  if (!input || !drop) return;
+  const val  = input.value.toLowerCase();
+  const hist = getFieldHistory(fieldId);
+  const matches = val
+    ? hist.filter(h => h.toLowerCase().includes(val))
+    : hist.slice(0, MAX_HIST);
+  if (!matches.length) { drop.classList.remove('open'); return; }
+  drop.innerHTML = matches.map(m =>
+    `<div class="dropdown-item" onmousedown="pickSuggestion('${fieldId}','${escHtml(m)}')">${escHtml(m)}</div>`
+  ).join('');
+  drop.classList.add('open');
+}
+
+function hideSuggestions(fieldId, delay) {
+  setTimeout(() => {
+    const drop = document.getElementById(`drop-${fieldId}`);
+    if (drop) drop.classList.remove('open');
+  }, delay);
+}
+
+function pickSuggestion(fieldId, value) {
+  const input = document.getElementById(fieldId);
+  if (input) input.value = value;
+  const drop = document.getElementById(`drop-${fieldId}`);
+  if (drop) drop.classList.remove('open');
+}
+
+function saveToHistory(fieldId, value) {
+  if (!value) return;
+  const key = fieldId.startsWith('prod-nombre') ? 'producto' : fieldId;
+  if (!history[key]) history[key] = [];
+  history[key] = [value, ...history[key].filter(v => v !== value)].slice(0, MAX_HIST);
+  localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════
+function submitRemision() {
+  if (!scriptUrl) {
+    showToast('⚠️ Primero configura la URL del Apps Script.', true);
+    document.getElementById('config-banner').style.display = 'flex';
+    return;
+  }
+
+  const fechaRegistro = document.getElementById('fecha-registro').value;
+  const fechaRemision = document.getElementById('fecha-remision').value;
+  const cliente       = document.getElementById('cliente').value.trim();
+  const nroRemision   = document.getElementById('nro-remision').value.trim();
+  const valorTotal    = parseFloat(document.getElementById('valor-total').value) || 0;
+  const productos     = getProductos();
+
+  if (!fechaRemision || !cliente || !nroRemision) {
+    showToast('⚠️ Fecha remisión, Cliente y Nro. Remisión son obligatorios.', true);
+    return;
+  }
+  if (productos.length === 0) {
+    showToast('⚠️ Agrega al menos un producto.', true);
+    return;
+  }
+  if (valorTotal <= 0) {
+    showToast('⚠️ El valor total debe ser mayor a cero.', true);
+    return;
+  }
+
+  // Prorrateo del valor total entre productos
+  const valorPorProd = valorTotal / productos.length;
+
+  // Construir filas (una por producto)
+  const filas = productos.map(p => ({
+    fechaRegistro,
+    fechaRemision,
+    cliente,
+    nroRemision,
+    producto: p.nombre,
+    altura:   p.altura,
+    grosor:   p.grosor,
+    cant:     p.cant,
+    valorLinea: valorPorProd.toFixed(2),
+  }));
+
+  // Guardar en historial local
+  saveToHistory('cliente', cliente);
+  saveToHistory('nro-remision', nroRemision);
+  productos.forEach(p => saveToHistory('prod-nombre-0', p.nombre));
+
+  setBtnLoading(true);
+
+  // Enviar via JSONP
+  const payload = encodeURIComponent(JSON.stringify({ action: 'registrarRemision', filas }));
+  const cbName  = `cb_${Date.now()}`;
+  const url     = `${scriptUrl}?callback=${cbName}&data=${payload}`;
+
+  window[cbName] = function(resp) {
+    setBtnLoading(false);
+    delete window[cbName];
+    if (script) document.body.removeChild(script);
+    if (resp && resp.status === 'ok') {
+      showToast(`✅ ${filas.length} fila(s) registradas correctamente.`, false);
+      clearForm();
+    } else {
+      showToast('❌ Error al guardar: ' + (resp?.message || 'Respuesta inesperada.'), true);
+    }
+  };
+
+  let script = document.createElement('script');
+  script.src = url;
+  script.onerror = () => {
+    setBtnLoading(false);
+    showToast('❌ No se pudo conectar al Apps Script. Revisa la URL.', true);
+    delete window[cbName];
+    document.body.removeChild(script);
+  };
+  document.body.appendChild(script);
+
+  // Timeout de seguridad
+  setTimeout(() => {
+    if (window[cbName]) {
+      window[cbName]({ status: 'error', message: 'Tiempo de espera agotado.' });
+    }
+  }, 15000);
+}
+
+function setBtnLoading(on) {
+  const btn = document.getElementById('btn-submit');
+  if (on) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Guardando...';
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Registrar Remisión';
+  }
+}
+
+// ═══════════════════════════════════════════
+// LIMPIAR FORMULARIO
+// ═══════════════════════════════════════════
+function clearForm() {
+  document.getElementById('fecha-registro').value = formatDateTime(new Date());
+  document.getElementById('fecha-remision').value = new Date().toISOString().split('T')[0];
+  document.getElementById('cliente').value       = '';
+  document.getElementById('nro-remision').value  = '';
+  document.getElementById('valor-total').value   = '';
+  document.getElementById('productos-container').innerHTML = '';
+  prodCount = 0;
+  addProducto();
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+let toastTimer;
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'show' + (isError ? ' error' : '');
+  t.style.borderLeftColor = isError ? 'var(--danger)' : 'var(--success)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 4000);
+}
+</script>
+</body>
+</html>
