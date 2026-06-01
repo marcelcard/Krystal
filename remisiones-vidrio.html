@@ -116,7 +116,7 @@
       background: var(--surface2); border: 1px solid var(--border);
       border-radius: 9px; padding: 14px 16px;
       display: grid;
-      grid-template-columns: 2fr 100px 110px 70px auto;
+      grid-template-columns: 2fr 140px 110px 70px auto;
       gap: 12px; align-items: end; position: relative;
     }
     .producto-row .field label { color: #5a6472; }
@@ -134,6 +134,28 @@
       background: var(--accent); color: #000; border-color: var(--accent);
     }
     .grosor-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+    /* Altura — botones toggle + input libre */
+    .altura-toggle { display: flex; gap: 6px; margin-bottom: 6px; }
+    .altura-btn {
+      flex: 1; padding: 7px 0; font-size: 13px; font-weight: 600;
+      border: 1px solid var(--border); border-radius: 7px;
+      background: var(--bg); color: var(--muted);
+      cursor: pointer; transition: all 0.18s; text-align: center;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .altura-btn.active {
+      background: var(--accent2); color: #fff; border-color: var(--accent2);
+    }
+    .altura-btn:hover:not(.active) { border-color: var(--accent2); color: var(--accent2); }
+    .altura-libre {
+      background: var(--bg); border: 1px dashed var(--border); border-radius: 7px;
+      color: var(--text); padding: 6px 10px; font-size: 13px;
+      font-family: 'DM Sans', sans-serif; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .altura-libre:focus { outline: none; border-color: var(--accent2); border-style: solid; }
+    .altura-libre::placeholder { color: #3a4350; font-style: italic; }
 
     .btn-remove-prod {
       background: transparent; border: 1px solid var(--border); border-radius: 6px;
@@ -410,14 +432,19 @@ function addProducto() {
              onblur="hideSuggestions('prod-nombre-${id}', 300)" />
       <div class="dropdown-list" id="drop-prod-nombre-${id}"></div>
     </div>
-    <div class="field autocomplete-wrap">
+    <div class="field">
       <label>Altura (m)</label>
-      <input type="text" id="prod-altura-${id}" autocomplete="off"
-             placeholder="1.20"
-             oninput="showSuggestions('prod-altura-${id}')"
-             onfocus="showSuggestions('prod-altura-${id}')"
-             onblur="hideSuggestions('prod-altura-${id}', 300)" />
-      <div class="dropdown-list" id="drop-prod-altura-${id}"></div>
+      <div class="altura-toggle">
+        <button type="button" class="altura-btn" id="altura-18-${id}"
+                onclick="selectAltura(${id}, '1.8')">1.8</button>
+        <button type="button" class="altura-btn" id="altura-19-${id}"
+                onclick="selectAltura(${id}, '1.9')">1.9</button>
+      </div>
+      <input type="text" class="altura-libre" id="prod-altura-${id}"
+             placeholder="Otra medida…"
+             oninput="onAlturaLibre(${id})"
+             autocomplete="off" />
+      <input type="hidden" id="prod-altura-val-${id}" value="" />
     </div>
     <div class="field">
       <label>Grosor (mm)</label>
@@ -444,6 +471,22 @@ function selectGrosor(id, val) {
   document.getElementById(`grosor-8-${id}`).classList.toggle('active', val === '8');
 }
 
+function selectAltura(id, val) {
+  // Activa el botón, limpia el input libre y guarda el valor
+  document.getElementById(`prod-altura-val-${id}`).value = val;
+  document.getElementById(`prod-altura-${id}`).value = '';  // limpia el libre
+  document.getElementById(`altura-18-${id}`).classList.toggle('active', val === '1.8');
+  document.getElementById(`altura-19-${id}`).classList.toggle('active', val === '1.9');
+}
+
+function onAlturaLibre(id) {
+  // Si escribe en el libre, deselecciona los botones
+  const libre = document.getElementById(`prod-altura-${id}`).value.trim();
+  document.getElementById(`prod-altura-val-${id}`).value = libre;
+  document.getElementById(`altura-18-${id}`).classList.remove('active');
+  document.getElementById(`altura-19-${id}`).classList.remove('active');
+}
+
 function removeProducto(id) {
   const rows = document.querySelectorAll('.producto-row');
   if (rows.length <= 1) { showToast('Debe haber al menos un producto.', true); return; }
@@ -457,7 +500,7 @@ function getProductos() {
     const rid = row.id.replace('prod-', '');
     result.push({
       nombre: document.getElementById(`prod-nombre-${rid}`)?.value.trim() || '',
-      altura: document.getElementById(`prod-altura-${rid}`)?.value.trim() || '',
+      altura: document.getElementById(`prod-altura-val-${rid}`)?.value.trim() || '',
       grosor: document.getElementById(`prod-grosor-${rid}`)?.value || '6',
       cant:   document.getElementById(`prod-cant-${rid}`)?.value.trim() || '1',
     });
