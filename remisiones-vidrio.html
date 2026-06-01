@@ -504,13 +504,23 @@ function addProducto() {
              onblur="hideSuggestions('prod-nombre-${id}', 300)" />
       <div class="dropdown-list" id="drop-prod-nombre-${id}"></div>
     </div>
-    <div class="field">
+    <div class="field autocomplete-wrap">
       <label>Altura (m)</label>
-      <input type="number" id="prod-altura-${id}" placeholder="1.20" min="0" step="0.01" />
+      <input type="text" id="prod-altura-${id}" autocomplete="off"
+             placeholder="1.20"
+             oninput="showSuggestions('prod-altura-${id}')"
+             onfocus="showSuggestions('prod-altura-${id}')"
+             onblur="hideSuggestions('prod-altura-${id}', 300)" />
+      <div class="dropdown-list" id="drop-prod-altura-${id}"></div>
     </div>
-    <div class="field">
+    <div class="field autocomplete-wrap">
       <label>Grosor (mm)</label>
-      <input type="number" id="prod-grosor-${id}" placeholder="6" min="0" step="0.1" />
+      <input type="text" id="prod-grosor-${id}" autocomplete="off"
+             placeholder="6"
+             oninput="showSuggestions('prod-grosor-${id}')"
+             onfocus="showSuggestions('prod-grosor-${id}')"
+             onblur="hideSuggestions('prod-grosor-${id}', 300)" />
+      <div class="dropdown-list" id="drop-prod-grosor-${id}"></div>
     </div>
     <div class="field">
       <label>Cant.</label>
@@ -549,8 +559,10 @@ function getProductos() {
 // AUTOCOMPLETE CON HISTORIAL
 // ═══════════════════════════════════════════
 function getFieldHistory(fieldId) {
-  // Normaliza clave para campos de productos dinámicos
-  const key = fieldId.startsWith('prod-nombre') ? 'producto' : fieldId;
+  let key = fieldId;
+  if (fieldId.startsWith('prod-nombre')) key = 'producto';
+  else if (fieldId.startsWith('prod-altura')) key = 'altura';
+  else if (fieldId.startsWith('prod-grosor')) key = 'grosor';
   return history[key] || [];
 }
 
@@ -586,7 +598,10 @@ function pickSuggestion(fieldId, value) {
 
 function saveToHistory(fieldId, value) {
   if (!value) return;
-  const key = fieldId.startsWith('prod-nombre') ? 'producto' : fieldId;
+  let key = fieldId;
+  if (fieldId.startsWith('prod-nombre')) key = 'producto';
+  else if (fieldId.startsWith('prod-altura')) key = 'altura';
+  else if (fieldId.startsWith('prod-grosor')) key = 'grosor';
   if (!history[key]) history[key] = [];
   history[key] = [value, ...history[key].filter(v => v !== value)].slice(0, MAX_HIST);
   localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
@@ -645,7 +660,11 @@ function submitRemision() {
   // Guardar en historial local
   saveToHistory('cliente', cliente);
   saveToHistory('nro-remision', nroRemision);
-  productos.forEach(p => saveToHistory('prod-nombre-0', p.nombre));
+  productos.forEach(p => {
+    saveToHistory('prod-nombre-0', p.nombre);
+    if (p.altura) saveToHistory('prod-altura-0', p.altura);
+    if (p.grosor) saveToHistory('prod-grosor-0', p.grosor);
+  });
 
   setBtnLoading(true);
 
